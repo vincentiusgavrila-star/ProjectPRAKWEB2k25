@@ -140,6 +140,18 @@
 </head>
 
 <body>
+    <?php 
+        if(isset($_GET['pesan'])){
+            $notif = $_GET['pesan'];
+            if ($notif == "gagl") {
+                echo ("Gagal Login!");
+            } elseif ($notif == "logout") {
+                echo ("Berhasil Logout!");
+            } elseif ($notif == "belum") {
+                echo ("Belum Login!");
+            }
+        }
+    ?>
     <div class="login-container">
         <div class="login-card">
             <!-- Logo -->
@@ -156,17 +168,19 @@
             <p class="subtitle">Masuk ke akun Daun Hijau Cafe Anda</p>
 
             <!-- Form Login -->
-            <form>
+            <form action="loginProses.php" method="POST">
                 <!-- Email -->
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="name@email.com" required>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="name@email.com"
+                        required>
                 </div>
 
                 <!-- Password -->
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Masukkan password" required>
+                    <input type="password" class="form-control" id="password" name="password"
+                        placeholder="Masukkan password" required>
                 </div>
 
                 <!-- Lupa Password -->

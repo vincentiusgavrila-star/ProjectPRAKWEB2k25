@@ -187,7 +187,7 @@
             <div id="alertMessage" class="alert" role="alert"></div>
 
             <!-- Form Register -->
-            <form action="../registerSuccess.php" method="POST" id="registerForm">
+            <form action="./registerSuccess.php" method="POST" id="registerForm">
                 <!-- Nama Lengkap -->
                 <div class="mb-3">
                     <label for="fullname" class="form-label">Nama Lengkap</label>
