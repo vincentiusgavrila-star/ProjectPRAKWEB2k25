@@ -268,7 +268,7 @@
 
             <!-- Form -->
             <div class="admin-body">
-                <form id="menuForm" action="">
+                <form id="menuForm" action="createMenu.php">
                     <!-- Nama Menu -->
                     <div class="form-section">
                         <h3 class="section-title">
@@ -349,21 +349,6 @@
                         Tambah Menu
                     </button>
                 </form>
-                <?php 
-                    include 'env.php';
-                    $name = $_POST["name"];
-                    $description = $_POST["description"];
-                    $price = $_POST["price"];
-                    $category = $_POST["category"];
-                    $komentar = $_POST["komentar"];
-
-                    $sql = "INSERT INTO products (name, description, price, category, komentar) VALUES ('$name', '$description', '$price', '$category')";
-                    if($koneksi->query($sql) === TRUE){
-                    // echo("Data berhasil ditambahkan");            // echo("<br> <a href= '../index.php'>HOME</a>");
-                    }else{
-                        echo("Error " . $sql . "<br>" . $koneksi->error);
-                    }
-                ?>
             </div>
         </div>
     </div>
