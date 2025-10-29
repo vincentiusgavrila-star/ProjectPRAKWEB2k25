@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Daun Hijau Cafe</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
     body {
@@ -143,12 +141,12 @@
     <?php 
         if(isset($_GET['pesan'])){
             $notif = $_GET['pesan'];
-            if ($notif == "gagl") {
-                echo ("Gagal Login!");
+            if ($notif == "gagal") {
+                echo"<script>alert('Login Dulu')</script>";
             } elseif ($notif == "logout") {
-                echo ("Berhasil Logout!");
+                echo"<script>alert('Logout')</script>";
             } elseif ($notif == "belum") {
-                echo ("Belum Login!");
+                echo"<script>alert('Login Dulu')</script>";
             }
         }
     ?>
@@ -162,44 +160,42 @@
                 <div class="logo-text">Daun Hijau Cafe</div>
                 <div class="logo-subtext">Indonesian Coffee Experience</div>
             </div>
+            <!-- /Logo -->
 
             <!-- Judul -->
             <h4 class="welcome-text">Selamat Datang Kembali</h4>
             <p class="subtitle">Masuk ke akun Daun Hijau Cafe Anda</p>
+            <!-- /Judul -->
 
             <!-- Form Login -->
             <form action="loginProses.php" method="POST">
-                <!-- Email -->
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" id="email" name="email" placeholder="name@email.com"
                         required>
                 </div>
 
-                <!-- Password -->
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password"
                         placeholder="Masukkan password" required>
                 </div>
 
-                <!-- Lupa Password -->
                 <div class="mb-4 text-end">
                     <a href="#" class="forgot-password">Lupa password?</a>
                 </div>
 
-                <!-- Tombol Masuk -->
                 <button type="submit" class="btn btn-login w-100">Masuk</button>
 
-                <!-- Daftar Sekarang -->
                 <div class="signup-text">
                     Belum punya akun? <a href="./register.php" class="signup-link">Daftar sekarang</a>
                 </div>
             </form>
+            <!-- /Form Login -->
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
