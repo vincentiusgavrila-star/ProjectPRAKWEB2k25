@@ -10,7 +10,6 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-    /* Reset margin dan padding global */
     * {
         margin: 0;
         padding: 0;
@@ -306,7 +305,6 @@
         transform: translateY(-1px);
     }
 
-    /* Section styling untuk konten lainnya */
     .content-section {
         min-height: 100vh;
         padding: 100px 0;
