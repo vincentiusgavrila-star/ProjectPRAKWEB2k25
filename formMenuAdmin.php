@@ -1,3 +1,13 @@
+<?php 
+    session_start();
+    if($_SESSION['username'] !== 'admin' && $_SESSION['password'] !== 'adminGanteng123'){
+        header("location:login.php?pesan=gagal");
+        exit();
+    }
+ ?>
+
+
+
 <!DOCTYPE html>
 <html lang="id">
 

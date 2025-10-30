@@ -5,16 +5,25 @@ session_start();
 $email = $_POST['email'];
 $password = $_POST['password'];
 
-$query = mysqli_query($koneksi, "SELECT * FROM users where email='$email' AND password= '$password' ");
+if($email === 'admin@gmail.com' && $password === 'adminGanteng123'){
+    $_SESSION['username'] = 'admin';
+    header("location:formMenuAdmin.php");
+    exit();
+}
 
-// var_dump($query);
+$stmt = $koneksi->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
+$stmt->bind_param("ss", $email, $password);
+$stmt->execute();
+$result = $stmt->get_result();
 
-$cek = mysqli_num_rows($query);
-
-if($cek > 0){
-    $_SESSION['username'] = $username;
+if($result->num_rows > 0){
+    $user = $result->fetch_assoc();
+    $_SESSION['username'] = $user['username'];
     header("location:dashboard.php");
+    exit();
 }else{
     header("location:login.php?pesan=gagal");
+    exit();
 }
+$stmt->close();
 ?>
