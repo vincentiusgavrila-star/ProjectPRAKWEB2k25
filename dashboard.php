@@ -1447,7 +1447,7 @@ $foodItems = getMenuItems($koneksi, 'makanan');
                     <div class="col-lg-6">
                         <div class="card contact-card contact-form-card">
                             <div class="card-body p-4">
-                                <form id="contactForm">
+                                <form id="contactForm" method="POST">
                                     <div class="mb-4">
                                         <label for="name" class="form-label">Nama Lengkap</label>
                                         <input type="text" class="form-control" id="name" name="name"
@@ -1739,7 +1739,7 @@ $foodItems = getMenuItems($koneksi, 'makanan');
     function handleOrderNow() {
         // Redirect ke halaman order atau tampilkan modal order
         alert('Redirect ke halaman pemesanan...');
-        // window.location.href = 'order.php';
+        window.location.href = 'menuUser.php';
     }
 
     // Optional: Add active state to menu cards on click
