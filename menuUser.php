@@ -498,7 +498,7 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
     <nav class="navbar navbar-custom navbar-expand-lg fixed-top">
         <div class="container">
             <!-- Logo -->
-            <a class="logo-container d-flex align-items-center text-decoration-none" href="index.php">
+            <a class="logo-container d-flex align-items-center text-decoration-none" href="dashboard.php">
                 <div class="logo-icon me-3">
                     <i class="bi bi-cup-hot text-white fs-5"></i>
                 </div>
@@ -519,10 +519,10 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
                 <div class="navbar-nav ms-auto align-items-center">
                     <!-- Navigation Items -->
                     <a class="nav-link-custom nav-link mx-1" href="dashboard.php">Home</a>
-                    <a class="nav-link-custom nav-link mx-1" href="">About Us</a>
-                    <a class="nav-link-custom nav-link mx-1" href="menuUser.php">Menu</a>
-                    <a class="nav-link-custom nav-link mx-1" href="">News</a>
-                    <a class="nav-link-custom nav-link mx-1" href="">Contact Us</a>
+                    <a class="nav-link-custom nav-link mx-1" href="dashboard.php#about">About Us</a>
+                    <a class="nav-link-custom nav-link active mx-1" href="menuUser.php">Menu</a>
+                    <a class="nav-link-custom nav-link mx-1" href="dashboard.php#news">News</a>
+                    <a class="nav-link-custom nav-link mx-1" href="dashboard.php#contact">Contact Us</a>
 
                     <!-- Auth Buttons -->
                     <div class="align-items-center ms-0">
@@ -538,11 +538,11 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
         <div class="collapse d-lg-none mobile-nav" id="mobileNav">
             <div class="container py-3">
                 <!-- Navigation Items -->
-                <a class="mobile-nav-link" href="index.php">Home</a>
-                <a class="mobile-nav-link" href="about.php">About Us</a>
+                <a class="mobile-nav-link" href="dashboard.php">Home</a>
+                <a class="mobile-nav-link" href="dashboard.php#about">About Us</a>
                 <a class="mobile-nav-link active" href="menuUser.php">Menu</a>
-                <a class="mobile-nav-link" href="news.php">News</a>
-                <a class="mobile-nav-link" href="contact.php">Contact Us</a>
+                <a class="mobile-nav-link" href="dashboard.php#news">News</a>
+                <a class="mobile-nav-link" href="dashboard.php#contact">Contact Us</a>
 
                 <!-- Order Button -->
                 <a class="btn btn-order w-100 mt-3 d-flex align-items-center justify-content-center py-3" href="order.php">

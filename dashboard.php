@@ -1104,7 +1104,7 @@ $foodItems = getMenuItems($koneksi, 'makanan');
 
                 <!-- Tombol -->
                 <div class="d-flex gap-4 justify-content-center flex-wrap">
-                    <a href="menu.html" class="btn btn-custom-green btn-lg">
+                    <a href="menuUser.php" class="btn btn-custom-green btn-lg">
                         Lihat Menu
                     </a>
 
