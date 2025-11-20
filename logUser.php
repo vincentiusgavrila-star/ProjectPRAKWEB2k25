@@ -2,24 +2,19 @@
 session_start();
 include 'env.php';
 
-// Check if user is admin
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
     header("location: login.php");
     exit();
 }
 
-// Get all contact messages
-$query = "SELECT cm.*, u.username, u.email as user_email 
-          FROM contact_messages cm 
-          LEFT JOIN users u ON cm.user_id = u.id_user 
-          ORDER BY cm.created_at DESC";
+
+$query = "SELECT cm.*, u.username, u.email as user_email FROM contact_messages cm LEFT JOIN users u ON cm.user_id = u.id_user ORDER BY cm.created_at DESC";
 $result = $koneksi->query($query);
 $contactMessages = [];
 if ($result) {
     $contactMessages = $result->fetch_all(MYSQLI_ASSOC);
 }
 
-// Handle message deletion
 if (isset($_GET['delete_id'])) {
     $delete_id = $koneksi->real_escape_string($_GET['delete_id']);
     $delete_query = "DELETE FROM contact_messages WHERE id = '$delete_id'";
