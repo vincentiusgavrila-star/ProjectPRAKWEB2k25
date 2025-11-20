@@ -1,17 +1,50 @@
 <?php 
 include 'env.php';
+session_start();
+
+$contact_success = '';
+$contact_error = '';
+
+if (isset($_SESSION['success'])) {
+    $contact_success = $_SESSION['success'];
+    unset($_SESSION['success']);
+}
+
+if (isset($_SESSION['error'])) {
+    $contact_error = $_SESSION['error'];
+    unset($_SESSION['error']);
+}
+
+if (isset($_SESSION['contact_errors'])) {
+    $contact_errors = $_SESSION['contact_errors'];
+    unset($_SESSION['contact_errors']);
+}
+
+
+if(isset($_GET['pesan'])){
+    $notif = $_GET['pesan'];
+        if ($notif == "gagal") {
+            echo"<script>alert('Login Dulu')</script>";
+        } elseif ($notif == "logout") {
+            echo"<script>alert('Logout')</script>";
+        } elseif ($notif == "belum") {
+            echo"<script>alert('Login Dulu')</script>";
+        } elseif($notif == "reset"){
+            unset($_SESSION['username']);
+    }
+}
 
 function getMenuItems($koneksi, $category) {
     $stmt = $koneksi->prepare("SELECT * FROM products WHERE category = ? ORDER BY name");
     $stmt->bind_param("s", $category);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     $items = [];
     while ($row = $result->fetch_assoc()) {
         $items[] = $row;
     }
-    
+
     $stmt->close();
     return $items;
 }
@@ -19,6 +52,26 @@ function getMenuItems($koneksi, $category) {
 $coffeeItems = getMenuItems($koneksi, 'coffee');
 $nonCoffeeItems = getMenuItems($koneksi, 'minuman');
 $foodItems = getMenuItems($koneksi, 'makanan');
+
+$isLoggedIn = isset($_SESSION['username']);
+$userName = '';
+$userEmail = '';
+
+if ($isLoggedIn) {
+    $userName = $_SESSION['username'];
+    $userEmail = isset($_SESSION['email']) ? $_SESSION['email'] : '';
+
+    if (empty($userEmail) && isset($_SESSION['user_id'])) {
+        $stmt = $koneksi->prepare("SELECT email FROM users WHERE id_user = ?");
+        $stmt->bind_param("i", $_SESSION['user_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($userData = $result->fetch_assoc()) {
+            $userEmail = $userData['email'];
+        }
+        $stmt->close();
+    }
+}
 ?>
 
 
@@ -824,6 +877,49 @@ $foodItems = getMenuItems($koneksi, 'makanan');
         display: none;
     }
 
+    .login-required {
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        border: 2px solid #ffc107;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .login-required-icon {
+        font-size: 3rem;
+        color: #ffc107;
+        margin-bottom: 1rem;
+    }
+
+    .login-required h4 {
+        color: #856404;
+        margin-bottom: 1rem;
+    }
+
+    .login-required p {
+        color: #856404;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-login-required {
+        background: linear-gradient(135deg, #198754, #155724);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-login-required:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+        color: white;
+    }
+
     @media (max-width: 768px) {
         .contact-section {
             padding: 3rem 0;
@@ -1000,6 +1096,48 @@ $foodItems = getMenuItems($koneksi, 'makanan');
             height: 45px;
         }
     }
+
+    .navbar-nav .d-flex.align-items-center {
+        gap: 12px;
+    }
+
+    .user-info-container {
+        background-color: rgba(25, 135, 84, 0.1);
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(25, 135, 84, 0.2);
+    }
+
+    .user-info-text {
+        color: #155724;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-nav .nav-link-custom {
+            margin: 0 6px;
+        }
+
+        .navbar-nav .d-flex.align-items-center {
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 1px solid #e5e7eb;
+        }
+    }
+
+
+    @media (max-width: 991.98px) {
+        .mobile-auth-section .rounded {
+            margin: 0 -0.75rem;
+        }
+    }
+
+
+    .user-info-container:hover {
+        background-color: rgba(25, 135, 84, 0.15);
+        transition: all 0.3s ease;
+    }
     </style>
 </head>
 
@@ -1035,23 +1173,24 @@ $foodItems = getMenuItems($koneksi, 'makanan');
                     <button class="nav-link-custom nav-link mx-1" onclick="handleNavClick('contact')">Contact
                         Us</button>
 
-                    <!-- Order Button -->
-                    <!-- <button class="btn btn-order ms-3 d-flex align-items-center" onclick="handleOrderClick()"
-                        id="orderButton">
-                        <i class="bi bi-cart me-2"></i>
-                        Order Now
-                    </button> -->
-
                     <!-- Auth Buttons -->
-                    <div class="align-items-center ms-0">
-                        <button class="btn-login me-0" onclick="handleLoginClick()" id="loginButton">
+                    <div class="d-flex align-items-center ms-3">
+                        <?php if ($isLoggedIn): ?>
+                        <!-- User Info dengan Layout yang Lebih Baik -->
+                        <div class="d-flex align-items-center me-3 p-2 rounded"
+                            style="background-color: rgba(25, 135, 84, 0.1);">
+                            <i class="bi bi-person-circle me-2 text-success"></i>
+                            <span class="text-dark fw-medium"><?php echo htmlspecialchars($userName); ?></span>
+                        </div>
+                        <a href="logout.php" class="btn btn-login d-flex align-items-center">
+                            <i class="bi bi-box-arrow-right me-1"></i>
+                            Logout
+                        </a>
+                        <?php else: ?>
+                        <button class="btn-login me-2" onclick="handleLoginClick()" id="loginButton">
                             Masuk
                         </button>
-                        <!-- <button class="btn-signup d-flex align-items-center" onclick="handleSignupClick()"
-                            id="signupButton">
-                            <i class="bi bi-person me-2"></i>
-                            Daftar
-                        </button> -->
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -1067,23 +1206,24 @@ $foodItems = getMenuItems($koneksi, 'makanan');
                 <button class="mobile-nav-link" onclick="handleNavClick('news')">News</button>
                 <button class="mobile-nav-link" onclick="handleNavClick('contact')">Contact Us</button>
 
-                <!-- Order Button -->
-                <button class="btn btn-order w-100 mt-3 d-flex align-items-center justify-content-center py-3"
-                    onclick="handleOrderClick()">
-                    <i class="bi bi-cart me-2"></i>
-                    Order Now
-                </button>
-
                 <!-- Auth Buttons -->
                 <div class="mobile-auth-section">
+                    <?php if ($isLoggedIn): ?>
+                    <!-- User Info di Mobile -->
+                    <div class="text-center mb-3 p-3 rounded" style="background-color: rgba(25, 135, 84, 0.1);">
+                        <i class="bi bi-person-circle me-2 text-success"></i>
+                        <strong><?php echo htmlspecialchars($userName); ?></strong>
+                    </div>
+                    <a href="logout.php"
+                        class="mobile-btn-login py-3 text-center d-flex align-items-center justify-content-center">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        Logout
+                    </a>
+                    <?php else: ?>
                     <button class="mobile-btn-login py-3" onclick="handleLoginClick()">
                         Masuk
                     </button>
-                    <!-- <button class="mobile-btn-signup d-flex align-items-center justify-content-center py-3"
-                        onclick="handleSignupClick()">
-                        <i class="bi bi-person me-2"></i>
-                        Daftar
-                    </button> -->
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -1197,7 +1337,6 @@ $foodItems = getMenuItems($koneksi, 'makanan');
             </div>
         </section>
 
-        <!-- Menu Section -->
         <!-- Menu Section -->
         <section id="menu" class="menu-section">
             <div class="container">
@@ -1436,28 +1575,73 @@ $foodItems = getMenuItems($koneksi, 'makanan');
                     </p>
                 </div>
 
-                <!-- Success Message -->
-                <div class="form-success" id="successMessage">
+                <!-- Success/Error Messages -->
+                <?php if (!empty($contact_success)): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
-                    Terima kasih! Pesan Anda telah dikirim.
+                    <?php echo htmlspecialchars($contact_success); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
+                <?php endif; ?>
+
+                <?php if (!empty($contact_error)): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <?php echo htmlspecialchars($contact_error); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <?php endif; ?>
+
+                <?php if (isset($contact_errors) && !empty($contact_errors)): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <ul class="mb-0">
+                        <?php foreach ($contact_errors as $error): ?>
+                        <li><?php echo htmlspecialchars($error); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <?php endif; ?>
 
                 <div class="row g-4">
                     <!-- Contact Form -->
                     <div class="col-lg-6">
+                        <?php if (!$isLoggedIn): ?>
+                        <!-- Login Required Message -->
+                        <div class="login-required">
+                            <div class="login-required-icon">
+                                <i class="bi bi-person-x"></i>
+                            </div>
+                            <h4>Login Diperlukan</h4>
+                            <p>Anda harus login terlebih dahulu untuk dapat mengirim pesan kepada kami.</p>
+                            <a href="login.php" class="btn btn-login-required">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>
+                                Login Sekarang
+                            </a>
+                        </div>
+                        <?php else: ?>
+                        <!-- Contact Form (Only for logged in users) -->
                         <div class="card contact-card contact-form-card">
                             <div class="card-body p-4">
-                                <form id="contactForm" method="POST">
+                                <div class="alert alert-info mb-4">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Anda login sebagai <strong><?php echo htmlspecialchars($userName); ?></strong>.
+                                    Form akan terisi otomatis dengan data profil Anda.
+                                </div>
+                                <form id="contactForm" method="POST" action="prosesPesan.php">
                                     <div class="mb-4">
                                         <label for="name" class="form-label">Nama Lengkap</label>
                                         <input type="text" class="form-control" id="name" name="name"
-                                            placeholder="Masukkan nama Anda" required>
+                                            value="<?php echo htmlspecialchars($userName); ?>" readonly>
+                                        <small class="text-muted">Nama diambil dari profil Anda</small>
                                     </div>
 
                                     <div class="mb-4">
                                         <label for="email" class="form-label">Email</label>
                                         <input type="email" class="form-control" id="email" name="email"
-                                            placeholder="nama@email.com" required>
+                                            value="<?php echo htmlspecialchars($userEmail); ?>" readonly>
+                                        <small class="text-muted">Email diambil dari profil Anda</small>
                                     </div>
 
                                     <div class="mb-4">
@@ -1473,6 +1657,7 @@ $foodItems = getMenuItems($koneksi, 'makanan');
                                 </form>
                             </div>
                         </div>
+                        <?php endif; ?>
                     </div>
 
                     <!-- Contact Information -->
@@ -1710,20 +1895,20 @@ $foodItems = getMenuItems($koneksi, 'makanan');
         const signupButton = document.getElementById('signupButton');
 
         // Remove active classes
-        orderButton.classList.remove('active');
-        loginButton.classList.remove('active');
-        signupButton.classList.remove('active');
+        if (orderButton) orderButton.classList.remove('active');
+        if (loginButton) loginButton.classList.remove('active');
+        if (signupButton) signupButton.classList.remove('active');
 
         // Add active class based on current page
         switch (currentPage) {
             case 'order':
-                orderButton.classList.add('active');
+                if (orderButton) orderButton.classList.add('active');
                 break;
             case 'login':
-                loginButton.classList.add('active');
+                if (loginButton) loginButton.classList.add('active');
                 break;
             case 'signup':
-                signupButton.classList.add('active');
+                if (signupButton) signupButton.classList.add('active');
                 break;
         }
     }
@@ -1738,10 +1923,23 @@ $foodItems = getMenuItems($koneksi, 'makanan');
 
     function handleOrderNow() {
         // Redirect ke halaman order atau tampilkan modal order
-        alert('Redirect ke halaman pemesanan...');
+        // alert('Redirect ke halaman pemesanan...');
         window.location.href = 'menuUser.php';
     }
 
+    // Contact form handling
+    document.addEventListener('DOMContentLoaded', function() {
+        const contactForm = document.getElementById('contactForm');
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', function() {
+                // Hanya tambah loading state, biarkan form submit normal
+                const submitBtn = contactForm.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Mengirim...';
+                submitBtn.disabled = true;
+            });
+        }
+    });
     // Optional: Add active state to menu cards on click
     document.addEventListener('DOMContentLoaded', function() {
         const menuCards = document.querySelectorAll('.menu-card');

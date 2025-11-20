@@ -1,16 +1,30 @@
 <?php 
+session_start();
 include 'env.php';
+
+if(!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin'){
+    header("location:login.php");
+    exit();
+}
 
 $queryUsers = "SELECT * FROM users";
 $resultUsers = $koneksi->query($queryUsers);
+
 $queryMenus = "SELECT * FROM products";
 $resultMenus = $koneksi->query($queryMenus);
 
+$queryOrders = "SELECT o.*, u.username, p.name as product_name, p.price as product_price
+                FROM orders o
+                JOIN users u ON o.user_id = u.id_user
+                JOIN products p ON o.product_id = p.id
+                ORDER BY o.order_date ASC";
+$resultOrders = $koneksi->query($queryOrders);
 
-
+// Get contact messages count
+$queryMessagesCount = "SELECT COUNT(*) as total_messages FROM contact_messages";
+$resultMessagesCount = $koneksi->query($queryMessagesCount);
+$messagesCount = $resultMessagesCount->fetch_assoc();
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="id">
@@ -141,6 +155,25 @@ $resultMenus = $koneksi->query($queryMenus);
         box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
     }
 
+    .btn-view-messages {
+        background: none;
+        border: 2px solid var(--primary-green);
+        color: var(--primary-green);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-view-messages:hover {
+        background-color: var(--primary-green);
+        color: white;
+        transform: translateY(-2px);
+    }
+
     .table-custom {
         margin: 0;
     }
@@ -163,6 +196,81 @@ $resultMenus = $koneksi->query($queryMenus);
         background-color: #f8f9fa;
     }
 
+    .messages-quickview {
+        background: white;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .messages-header {
+        background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+        color: white;
+        padding: 1.5rem;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+    }
+
+    .messages-body {
+        padding: 1.5rem;
+    }
+
+    .message-preview {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .message-preview:last-child {
+        border-bottom: none;
+    }
+
+    .message-preview:hover {
+        background-color: #f8f9fa;
+    }
+
+    .message-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        margin-right: 1rem;
+    }
+
+    .message-content {
+        flex: 1;
+    }
+
+    .message-sender {
+        font-weight: 600;
+        color: var(--dark-green);
+        margin: 0;
+    }
+
+    .message-text {
+        color: #6c757d;
+        margin: 0;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 300px;
+    }
+
+    .message-date {
+        color: #6c757d;
+        font-size: 0.8rem;
+        text-align: right;
+    }
+
     .badge-status {
         padding: 0.35rem 0.75rem;
         border-radius: 20px;
@@ -170,31 +278,9 @@ $resultMenus = $koneksi->query($queryMenus);
         font-weight: 600;
     }
 
-    .badge-completed {
-        background-color: #d1e7dd;
-        color: #0f5132;
-    }
-
-    .badge-processing {
-        background-color: #cfe2ff;
-        color: #052c65;
-    }
-
-    .badge-pending {
-        background-color: #fff3cd;
-        color: #664d03;
-    }
-
-    .badge-available {
-        background-color: #d1e7dd;
-        color: #0f5132;
-    }
-
-    .badge-popular {
-        background-color: transparent;
-        border: 1px solid #fd7e14;
-        color: #fd7e14;
-        padding: 0.25rem 0.5rem;
+    .badge-new {
+        background-color: #dc3545;
+        color: white;
     }
 
     .btn-action {
@@ -241,6 +327,10 @@ $resultMenus = $koneksi->query($queryMenus);
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
+
+        .message-text {
+            max-width: 200px;
+        }
     }
     </style>
 </head>
@@ -254,7 +344,18 @@ $resultMenus = $koneksi->query($queryMenus);
                 Back to Home
             </button>
             <h1 class="page-title display-5 fw-bold">Admin Dashboard</h1>
-            <p class="page-subtitle">Manage users, menu items, and orders</p>
+            <p class="page-subtitle">Manage users, menu items, orders, and customer messages</p>
+
+            <!-- Quick Navigation to Messages -->
+            <div class="mt-3">
+                <a href="logUser.php" class="btn btn-view-messages">
+                    <i class="bi bi-chat-square-text me-2"></i>
+                    View All Customer Messages
+                    <?php if ($messagesCount['total_messages'] > 0): ?>
+                    <span class="badge bg-primary ms-2"><?php echo $messagesCount['total_messages']; ?> messages</span>
+                    <?php endif; ?>
+                </a>
+            </div>
         </div>
 
         <!-- Tabs Navigation -->
@@ -327,21 +428,6 @@ $resultMenus = $koneksi->query($queryMenus);
                                         }
                                     }
                                     ?>
-                                    <!-- <tr>
-                                        <td>1</td>
-                                        <td>Ahmad Rizki</td>
-                                        <td>ahmad.rizki@email.com</td>
-                                        <td>081234567890</td>
-                                        <td>2024-01-15</td>
-                                        <td class="text-end">
-                                            <button class="btn btn-action">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button class="btn btn-action delete">
-                                                <i class="bi bi-trash text-danger"></i>
-                                            </button>
-                                        </td>
-                                    </tr> -->
                                 </tbody>
                             </table>
                         </div>
@@ -387,7 +473,7 @@ $resultMenus = $koneksi->query($queryMenus);
                                             echo "<td>".$id."</td>";
                                             echo "<td>".$row['name']."</td>";
                                             echo "<td>".$row['category']."</td>";
-                                            echo "<td>".$row['price']."</td>";
+                                            echo "<td>Rp " . number_format($row['price'], 0, ',', '.') . "</td>";
                                             echo "<td>".$row['description']."</td>";
                                             echo "<td>
                                                 <div class='text-end'>
@@ -403,22 +489,6 @@ $resultMenus = $koneksi->query($queryMenus);
                                         }
                                     }
                                     ?>
-                                    <!-- <tr>
-                                        <td>1</td>
-                                        <td>Kopi Aceh Gayo</td>
-                                        <td>Coffee</td>
-                                        <td>Rp 25.000</td>
-                                        <td><span class="badge badge-status badge-available">Available</span></td>
-                                        <td><span class="badge badge-popular">Popular</span></td>
-                                        <td class="text-end">
-                                            <button class="btn btn-action">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button class="btn btn-action delete">
-                                                <i class="bi bi-trash text-danger"></i>
-                                            </button>
-                                        </td>
-                                    </tr> -->
                                 </tbody>
                             </table>
                         </div>
@@ -444,36 +514,106 @@ $resultMenus = $koneksi->query($queryMenus);
                                     <tr>
                                         <th>Order ID</th>
                                         <th>Customer</th>
-                                        <th>Items</th>
-                                        <th>Total</th>
-                                        <th>Type</th>
-                                        <th>Status</th>
-                                        <th>Date</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total Price</th>
+                                        <th>Notes</th>
+                                        <th>Order Date</th>
                                         <th class="text-end">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>ORD-001</td>
-                                        <td>Ahmad Rizki</td>
-                                        <td class="text-truncate-custom">Kopi Aceh Gayo (2), Croissant (1)</td>
-                                        <td>Rp 68.000</td>
-                                        <td>Dine-in</td>
-                                        <td><span class="badge badge-status badge-completed">Completed</span></td>
-                                        <td>2024-11-10</td>
-                                        <td class="text-end">
-                                            <button class="btn btn-action">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button class="btn btn-action delete">
-                                                <i class="bi bi-trash text-danger"></i>
-                                            </button>
-                                        </td>
+                                    <?php 
+                                    if(mysqli_num_rows($resultOrders) > 0){
+                                        $orderCount = 0;
+                                        while($row = mysqli_fetch_assoc($resultOrders)){
+                                            $orderCount += 1;
+                                            $totalPrice = $row['quantity'] * $row['product_price'];
+                                            $formattedDate = date('Y-m-d H:i', strtotime($row['order_date']));
+                                            
+                                            echo "<tr>";
+                                            echo "<td>ORD-" . str_pad($orderCount, 3, '0', STR_PAD_LEFT) . "</td>";
+                                            echo "<td>".$row['username']."</td>";
+                                            echo "<td>".$row['product_name']."</td>";
+                                            echo "<td>".$row['quantity']."</td>";
+                                            echo "<td>Rp " . number_format($totalPrice, 0, ',', '.') . "</td>";
+                                            echo "<td class='text-truncate-custom' title='".$row['notes']."'>".$row['notes']."</td>";
+                                            echo "<td>".$formattedDate."</td>";
+                                            echo "<td>
+                                                <div class='text-end'>
+                                                    <button class='btn btn-action'>
+                                                        <i class='bi bi-pencil'></i>
+                                                    </button>
+                                                    <button class='btn btn-action delete'>
+                                                        <i class='bi bi-trash text-danger'></i>
+                                                    </button>
+                                                </div>
+                                            </td>";
+                                            echo "</tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='8' class='text-center py-4'>No orders found</td></tr>";
+                                    }
+                                    ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Quick Messages Preview -->
+        <div class="messages-quickview">
+            <div class="messages-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0">Recent Customer Messages</h4>
+                        <p class="mb-0">Latest messages from customers</p>
+                    </div>
+                    <a href="logUser.php" class="btn btn-light">
+                        View All <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="messages-body">
+                <?php
+                // Get latest 5 messages for preview
+                $queryRecentMessages = "SELECT cm.*, u.username 
+                                      FROM contact_messages cm 
+                                      LEFT JOIN users u ON cm.user_id = u.id_user 
+                                      ORDER BY cm.created_at DESC 
+                                      LIMIT 5";
+                $resultRecentMessages = $koneksi->query($queryRecentMessages);
+                
+                if (mysqli_num_rows($resultRecentMessages) > 0): 
+                    while($message = mysqli_fetch_assoc($resultRecentMessages)):
+                ?>
+                <div class="message-preview">
+                    <div class="message-avatar">
+                        <?php echo strtoupper(substr($message['name'], 0, 1)); ?>
+                    </div>
+                    <div class="message-content">
+                        <h6 class="message-sender">
+                            <?php echo htmlspecialchars($message['name']); ?>
+                        </h6>
+                        <p class="message-text" title="<?php echo htmlspecialchars($message['message']); ?>">
+                            <?php echo htmlspecialchars($message['message']); ?>
+                        </p>
+                    </div>
+                    <div class="message-date">
+                        <?php echo date('M j', strtotime($message['created_at'])); ?>
+                    </div>
+                </div>
+                <?php 
+                    endwhile;
+                else: 
+                ?>
+                <div class="text-center py-4">
+                    <i class="bi bi-chat-square-text display-4 text-muted"></i>
+                    <p class="text-muted mt-2">No messages yet</p>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -483,7 +623,7 @@ $resultMenus = $koneksi->query($queryMenus);
 
     <script>
     function handleBack() {
-        window.location.href = 'dashboard.php';
+        window.location.href = 'index.php?pesan=reset';
     }
 
     function handleAddMenu() {

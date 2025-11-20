@@ -1,56 +1,63 @@
 <?php
 session_start();
-require_once 'env.php';
-
-$queryMenus = "SELECT * FROM products";
-$resultMenus = $koneksi->query($queryMenus);
-
-$menuItems = [];
-if ($resultMenus->num_rows > 0) {
-    while($row = $resultMenus->fetch_assoc()) {
-        $menuItems[] = [
-            'id' => $row['id'],
-            'name' => $row['name'],
-            'description' => $row['description'],
-            'price' => number_format($row['price'], 0, ',', '.'),
-            'category' => $row['category']
-        ];
+include 'env.php';
+// unset($_SESSION['username']);
+if(isset($_SESSION['username'])){
+    $queryMenus = "SELECT * FROM products";
+    $resultMenus = $koneksi->query($queryMenus);
+    
+    $menuItems = [];
+    if ($resultMenus->num_rows > 0) {
+        while($row = $resultMenus->fetch_assoc()) {
+            $menuItems[] = [
+                'id' => $row['id'],
+                'name' => $row['name'],
+                'description' => $row['description'],
+                'price' => number_format($row['price'], 0, ',', '.'),
+                'category' => $row['category']
+            ];
+        }
     }
+    
+    $coffeeItems = array_filter($menuItems, fn($item) => $item['category'] === 'coffee');
+    $minumanItems = array_filter($menuItems, fn($item) => $item['category'] === 'minuman');
+    $makananItems = array_filter($menuItems, fn($item) => $item['category'] === 'makanan');
+    
+    $searchQuery = $_POST['search'] ?? '';
+    
+    $filteredAllItems = array_filter($menuItems, function($item) use ($searchQuery) {
+        return empty($searchQuery) || 
+               stripos($item['name'], $searchQuery) !== false || 
+               stripos($item['description'], $searchQuery) !== false;
+    });
+    
+    $filteredCoffeeItems = array_filter($coffeeItems, function($item) use ($searchQuery) {
+        return empty($searchQuery) || 
+               stripos($item['name'], $searchQuery) !== false || 
+               stripos($item['description'], $searchQuery) !== false;
+    });
+    
+    $filteredMinumanItems = array_filter($minumanItems, function($item) use ($searchQuery) {
+        return empty($searchQuery) || 
+               stripos($item['name'], $searchQuery) !== false || 
+               stripos($item['description'], $searchQuery) !== false;
+    });
+    
+    $filteredMakananItems = array_filter($makananItems, function($item) use ($searchQuery) {
+        return empty($searchQuery) || 
+               stripos($item['name'], $searchQuery) !== false || 
+               stripos($item['description'], $searchQuery) !== false;
+    });
+}else{
+    header("location:login.php");
+    exit();
+
 }
-
-$coffeeItems = array_filter($menuItems, fn($item) => $item['category'] === 'coffee');
-$minumanItems = array_filter($menuItems, fn($item) => $item['category'] === 'minuman');
-$makananItems = array_filter($menuItems, fn($item) => $item['category'] === 'makanan');
-
-$searchQuery = $_POST['search'] ?? '';
-
-$filteredAllItems = array_filter($menuItems, function($item) use ($searchQuery) {
-    return empty($searchQuery) || 
-           stripos($item['name'], $searchQuery) !== false || 
-           stripos($item['description'], $searchQuery) !== false;
-});
-
-$filteredCoffeeItems = array_filter($coffeeItems, function($item) use ($searchQuery) {
-    return empty($searchQuery) || 
-           stripos($item['name'], $searchQuery) !== false || 
-           stripos($item['description'], $searchQuery) !== false;
-});
-
-$filteredMinumanItems = array_filter($minumanItems, function($item) use ($searchQuery) {
-    return empty($searchQuery) || 
-           stripos($item['name'], $searchQuery) !== false || 
-           stripos($item['description'], $searchQuery) !== false;
-});
-
-$filteredMakananItems = array_filter($makananItems, function($item) use ($searchQuery) {
-    return empty($searchQuery) || 
-           stripos($item['name'], $searchQuery) !== false || 
-           stripos($item['description'], $searchQuery) !== false;
-});
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,7 +77,8 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
         background-color: #f8f9fa;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         line-height: 1.6;
-        padding-top: 80px; /* Added for fixed navbar */
+        padding-top: 80px;
+        /* Added for fixed navbar */
     }
 
     /* NEW NAVBAR STYLES from idk.html */
@@ -472,20 +480,20 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
             flex-direction: column;
             align-items: center;
         }
-        
+
         .nav-tabs-custom .nav-link {
             min-width: 200px;
             padding: 0.75rem 1.5rem;
         }
-        
+
         .menu-card-body {
             padding: 1.25rem;
         }
-        
+
         .menu-item-name {
             font-size: 1.2rem;
         }
-        
+
         .menu-item-price {
             font-size: 1.2rem;
         }
@@ -518,11 +526,11 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto align-items-center">
                     <!-- Navigation Items -->
-                    <a class="nav-link-custom nav-link mx-1" href="dashboard.php">Home</a>
-                    <a class="nav-link-custom nav-link mx-1" href="dashboard.php#about">About Us</a>
+                    <a class="nav-link-custom nav-link mx-1" href="index.php">Home</a>
+                    <a class="nav-link-custom nav-link mx-1" href="index.php#about">About Us</a>
                     <a class="nav-link-custom nav-link active mx-1" href="menuUser.php">Menu</a>
-                    <a class="nav-link-custom nav-link mx-1" href="dashboard.php#news">News</a>
-                    <a class="nav-link-custom nav-link mx-1" href="dashboard.php#contact">Contact Us</a>
+                    <a class="nav-link-custom nav-link mx-1" href="index.php#news">News</a>
+                    <a class="nav-link-custom nav-link mx-1" href="index.php#contact">Contact Us</a>
 
                     <!-- Auth Buttons -->
                     <div class="align-items-center ms-0">
@@ -545,7 +553,8 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
                 <a class="mobile-nav-link" href="dashboard.php#contact">Contact Us</a>
 
                 <!-- Order Button -->
-                <a class="btn btn-order w-100 mt-3 d-flex align-items-center justify-content-center py-3" href="order.php">
+                <a class="btn btn-order w-100 mt-3 d-flex align-items-center justify-content-center py-3"
+                    href="order.php">
                     <i class="bi bi-cart me-2"></i>
                     Order Now
                 </a>
@@ -575,33 +584,30 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
             <form method="POST" action="">
                 <div class="search-box">
                     <i class="bi bi-search search-icon"></i>
-                    <input type="text" 
-                    name="search" 
-                    class="form-control search-input" 
-                    placeholder="Cari menu..."
-                    value="<?php echo htmlspecialchars($searchQuery); ?>">
+                    <input type="text" name="search" class="form-control search-input" placeholder="Cari menu..."
+                        value="<?php echo htmlspecialchars($searchQuery); ?>">
                 </div>
             </form>
         </div>
-        
-            
+
+
         <!-- Improved Tabs Navigation with All Menu -->
         <ul class="nav nav-tabs nav-tabs-custom" id="menuTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all"
-                    type="button" role="tab">
-                    Semua Menu 
+                <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button"
+                    role="tab">
+                    Semua Menu
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="coffee-tab" data-bs-toggle="tab" data-bs-target="#coffee"
-                    type="button" role="tab">
+                <button class="nav-link" id="coffee-tab" data-bs-toggle="tab" data-bs-target="#coffee" type="button"
+                    role="tab">
                     Coffee (<?php echo count($filteredCoffeeItems); ?>)
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="minuman-tab" data-bs-toggle="tab" data-bs-target="#minuman"
-                    type="button" role="tab">
+                <button class="nav-link" id="minuman-tab" data-bs-toggle="tab" data-bs-target="#minuman" type="button"
+                    role="tab">
                     Minuman (<?php echo count($filteredMinumanItems); ?>)
                 </button>
             </li>
@@ -618,96 +624,100 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
             <!-- All Menu Tab -->
             <div class="tab-pane fade show active" id="all" role="tabpanel">
                 <?php if (empty($filteredAllItems)): ?>
-                    <div class="no-items">
-                        Tidak ada menu yang ditemukan
-                    </div>
+                <div class="no-items">
+                    Tidak ada menu yang ditemukan
+                </div>
                 <?php else: ?>
-                    <div class="menu-grid">
-                        <?php foreach ($filteredAllItems as $item): ?>
-                            <div class="menu-card">
-                                <div class="menu-card-body">
-                                    <h3 class="menu-item-name"><?php echo htmlspecialchars($item['name']); ?></h3>
-                                    <p class="menu-item-description"><?php echo htmlspecialchars($item['description']); ?></p>
-                                    <p class="menu-item-price">Rp <?php echo $item['price']; ?></p>
-                                    <button class="btn-order-menu" onclick="window.location.href='order.php?item_id=<?php echo $item['id']; ?>'">
-                                        Pesan
-                                    </button>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
+                <div class="menu-grid">
+                    <?php foreach ($filteredAllItems as $item): ?>
+                    <div class="menu-card">
+                        <div class="menu-card-body">
+                            <h3 class="menu-item-name"><?php echo htmlspecialchars($item['name']); ?></h3>
+                            <p class="menu-item-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                            <p class="menu-item-price">Rp <?php echo $item['price']; ?></p>
+                            <button class="btn-order-menu"
+                                onclick="window.location.href='order.php?item_id=<?php echo $item['id']; ?>'">
+                                Pesan
+                            </button>
+                        </div>
                     </div>
+                    <?php endforeach; ?>
+                </div>
                 <?php endif; ?>
             </div>
 
             <!-- Coffee Tab -->
             <div class="tab-pane fade" id="coffee" role="tabpanel">
                 <?php if (empty($filteredCoffeeItems)): ?>
-                    <div class="no-items">
-                        Tidak ada menu coffee yang ditemukan
-                    </div>
+                <div class="no-items">
+                    Tidak ada menu coffee yang ditemukan
+                </div>
                 <?php else: ?>
-                    <div class="menu-grid">
-                        <?php foreach ($filteredCoffeeItems as $item): ?>
-                            <div class="menu-card">
-                                <div class="menu-card-body">
-                                    <h3 class="menu-item-name"><?php echo htmlspecialchars($item['name']); ?></h3>
-                                    <p class="menu-item-description"><?php echo htmlspecialchars($item['description']); ?></p>
-                                    <p class="menu-item-price">Rp <?php echo $item['price']; ?></p>
-                                    <button class="btn-order-menu" onclick="window.location.href='order.php?item_id=<?php echo $item['id']; ?>'">
-                                        Pesan
-                                    </button>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
+                <div class="menu-grid">
+                    <?php foreach ($filteredCoffeeItems as $item): ?>
+                    <div class="menu-card">
+                        <div class="menu-card-body">
+                            <h3 class="menu-item-name"><?php echo htmlspecialchars($item['name']); ?></h3>
+                            <p class="menu-item-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                            <p class="menu-item-price">Rp <?php echo $item['price']; ?></p>
+                            <button class="btn-order-menu"
+                                onclick="window.location.href='order.php?item_id=<?php echo $item['id']; ?>'">
+                                Pesan
+                            </button>
+                        </div>
                     </div>
+                    <?php endforeach; ?>
+                </div>
                 <?php endif; ?>
             </div>
 
             <!-- Minuman Tab -->
             <div class="tab-pane fade" id="minuman" role="tabpanel">
                 <?php if (empty($filteredMinumanItems)): ?>
-                    <div class="no-items">
-                        Tidak ada menu minuman yang ditemukan
-                    </div>
+                <div class="no-items">
+                    Tidak ada menu minuman yang ditemukan
+                </div>
                 <?php else: ?>
-                    <div class="menu-grid">
-                        <?php foreach ($filteredMinumanItems as $item): ?>
-                            <div class="menu-card">
-                                <div class="menu-card-body">
-                                    <h3 class="menu-item-name"><?php echo htmlspecialchars($item['name']); ?></h3>
-                                    <p class="menu-item-description"><?php echo htmlspecialchars($item['description']); ?></p>
-                                    <p class="menu-item-price">Rp <?php echo $item['price']; ?></p>
-                                    <button class="btn-order-menu" onclick="window.location.href='order.php?item_id=<?php echo $item['id']; ?>'">
-                                        Pesan
-                                    </button>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
+                <div class="menu-grid">
+                    <?php foreach ($filteredMinumanItems as $item): ?>
+                    <div class="menu-card">
+                        <div class="menu-card-body">
+                            <h3 class="menu-item-name"><?php echo htmlspecialchars($item['name']); ?></h3>
+                            <p class="menu-item-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                            <p class="menu-item-price">Rp <?php echo $item['price']; ?></p>
+                            <button class="btn-order-menu"
+                                onclick="window.location.href='order.php?item_id=<?php echo $item['id']; ?>'">
+                                Pesan
+                            </button>
+                        </div>
                     </div>
+                    <?php endforeach; ?>
+                </div>
                 <?php endif; ?>
             </div>
 
             <!-- Makanan Tab -->
             <div class="tab-pane fade" id="makanan" role="tabpanel">
                 <?php if (empty($filteredMakananItems)): ?>
-                    <div class="no-items">
-                        Tidak ada menu makanan yang ditemukan
-                    </div>
+                <div class="no-items">
+                    Tidak ada menu makanan yang ditemukan
+                </div>
                 <?php else: ?>
-                    <div class="menu-grid">
-                        <?php foreach ($filteredMakananItems as $item): ?>
-                            <div class="menu-card">
-                                <div class="menu-card-body">
-                                    <h3 class="menu-item-name"><?php echo htmlspecialchars($item['name']); ?></h3>
-                                    <p class="menu-item-description"><?php echo htmlspecialchars($item['description']); ?></p>
-                                    <p class="menu-item-price">Rp <?php echo $item['price']; ?></p>
-                                    <button class="btn-order-menu" onclick="window.location.href='order.php?item_id=<?php echo $item['id']; ?>'">
-                                        Pesan
-                                    </button>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
+                <div class="menu-grid">
+                    <?php foreach ($filteredMakananItems as $item): ?>
+                    <div class="menu-card">
+                        <div class="menu-card-body">
+                            <h3 class="menu-item-name"><?php echo htmlspecialchars($item['name']); ?></h3>
+                            <p class="menu-item-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                            <p class="menu-item-price">Rp <?php echo $item['price']; ?></p>
+                            <button class="btn-order-menu"
+                                onclick="window.location.href='order.php?item_id=<?php echo $item['id']; ?>'">
+                                Pesan
+                            </button>
+                        </div>
                     </div>
+                    <?php endforeach; ?>
+                </div>
                 <?php endif; ?>
             </div>
         </div>
@@ -716,13 +726,13 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
         <div class="cta-section">
             <h2 class="cta-title">Siap Untuk Memesan?</h2>
             <p class="cta-description">
-                Nikmati pengalaman coffee shop terbaik dengan berbagai pilihan menu yang lezat. 
+                Nikmati pengalaman coffee shop terbaik dengan berbagai pilihan menu yang lezat.
                 Pesan sekarang dan dapatkan promo menarik!
             </p>
             <button onclick="handleNavClick('menus')" class="btn btn-cta">
-                
-                    <i class="bi bi-cart me-2"></i>Mulai Pesan
-                
+
+                <i class="bi bi-cart me-2"></i>Mulai Pesan
+
             </button>
         </div>
     </div>
@@ -730,7 +740,7 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-            function scrollToSection(id) {
+    function scrollToSection(id) {
         const element = document.getElementById(id);
         if (element) {
             element.scrollIntoView({
@@ -738,7 +748,8 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
             });
         }
     }
-        function handleNavClick(id) {
+
+    function handleNavClick(id) {
         scrollToSection(id);
         // Tutup mobile menu jika terbuka
         const mobileNav = document.getElementById('mobileNav');
@@ -749,4 +760,5 @@ $filteredMakananItems = array_filter($makananItems, function($item) use ($search
     }
     </script>
 </body>
+
 </html>

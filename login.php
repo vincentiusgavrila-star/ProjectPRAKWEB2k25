@@ -147,6 +147,8 @@
                 echo"<script>alert('Logout')</script>";
             } elseif ($notif == "belum") {
                 echo"<script>alert('Login Dulu')</script>";
+            } elseif($notif == "reset"){
+                unset($_SESSION['username']);
             }
         }
     ?>
