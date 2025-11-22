@@ -153,6 +153,10 @@
         }
     ?>
     <div class="login-container">
+        <button class="btn btn-back text-light" onclick="handleBack()">
+            <i class="bi bi-arrow-left me-2"></i>
+            Go To Dashboard
+        </button>
         <div class="login-card">
             <!-- Logo -->
             <div class="logo">
@@ -199,6 +203,11 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function handleBack() {
+        window.location.href = 'index.php';
+    }
+    </script>
 </body>
 
 </html>

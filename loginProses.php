@@ -11,7 +11,7 @@ if($email === 'admin@gmail.com' && $password === 'adminGanteng123'){
     exit();
 }
 
-$stmt = $koneksi->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
+$stmt = $koneksi->prepare("SELECT * FROM users WHERE BINARY email = ? AND password = ?");
 $stmt->bind_param("ss", $email, $password);
 $stmt->execute();
 $result = $stmt->get_result();
