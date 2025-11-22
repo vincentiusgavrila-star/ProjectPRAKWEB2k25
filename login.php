@@ -142,7 +142,7 @@
         if(isset($_GET['pesan'])){
             $notif = $_GET['pesan'];
             if ($notif == "gagal") {
-                echo"<script>alert('Login Dulu')</script>";
+                echo"<script>alert('Login Gagal')</script>";
             } elseif ($notif == "logout") {
                 echo"<script>alert('Logout')</script>";
             } elseif ($notif == "belum") {

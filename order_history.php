@@ -1,7 +1,6 @@
 <?php
-// order_history.php
 session_start();
-require_once 'env.php';
+include 'env.php';
 
 // Cek apakah user sudah login
 if (!isset($_SESSION['user_id'])) {
@@ -16,7 +15,7 @@ $query = "SELECT o.*, p.name as product_name, p.price as product_price
           FROM orders o 
           JOIN products p ON o.product_id = p.id 
           WHERE o.user_id = '$user_id' 
-          ORDER BY o.order_date DESC";
+          ORDER BY o.order_date ASC";
 $result = $koneksi->query($query);
 ?>
 
@@ -44,7 +43,7 @@ $result = $koneksi->query($query);
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="dashboard.php">
+            <a class="navbar-brand fw-bold" href="index.php">
                 <i class="fas fa-leaf me-2"></i>Daun Hijau Cafe
             </a>
             <div class="navbar-nav ms-auto">

@@ -53,6 +53,26 @@ if(isset($_SESSION['username'])){
     exit();
 
 }
+
+$isLoggedIn = isset($_SESSION['username']);
+$userName = '';
+$userEmail = '';
+
+if ($isLoggedIn) {
+    $userName = $_SESSION['username'];
+    $userEmail = isset($_SESSION['email']) ? $_SESSION['email'] : '';
+
+    if (empty($userEmail) && isset($_SESSION['user_id'])) {
+        $stmt = $koneksi->prepare("SELECT email FROM users WHERE id_user = ?");
+        $stmt->bind_param("i", $_SESSION['user_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($userData = $result->fetch_assoc()) {
+            $userEmail = $userData['email'];
+        }
+        $stmt->close();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -502,11 +522,10 @@ if(isset($_SESSION['username'])){
 </head>
 
 <body>
-    <!-- NEW NAVBAR from idk.html -->
     <nav class="navbar navbar-custom navbar-expand-lg fixed-top">
         <div class="container">
             <!-- Logo -->
-            <a class="logo-container d-flex align-items-center text-decoration-none" href="dashboard.php">
+            <a class="logo-container d-flex align-items-center text-decoration-none" href="index.php">
                 <div class="logo-icon me-3">
                     <i class="bi bi-cup-hot text-white fs-5"></i>
                 </div>
@@ -533,10 +552,23 @@ if(isset($_SESSION['username'])){
                     <a class="nav-link-custom nav-link mx-1" href="index.php#contact">Contact Us</a>
 
                     <!-- Auth Buttons -->
-                    <div class="align-items-center ms-0">
-                        <a class="btn-login me-0" href="login.php" id="loginButton">
-                            Masuk
+                    <div class="d-flex align-items-center ms-3">
+                        <?php if ($isLoggedIn): ?>
+                        <!-- User Info dengan Layout yang Lebih Baik -->
+                        <div class="d-flex align-items-center me-3 p-2 rounded"
+                            style="background-color: rgba(25, 135, 84, 0.1);">
+                            <i class="bi bi-person-circle me-2 text-success"></i>
+                            <span class="text-dark fw-medium"><?php echo htmlspecialchars($userName); ?></span>
+                        </div>
+                        <a href="logout.php" class="btn btn-login d-flex align-items-center">
+                            <i class="bi bi-box-arrow-right me-1"></i>
+                            Logout
                         </a>
+                        <?php else: ?>
+                        <button class="btn-login me-2" onclick="handleLoginClick()" id="loginButton">
+                            Masuk
+                        </button>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -546,11 +578,11 @@ if(isset($_SESSION['username'])){
         <div class="collapse d-lg-none mobile-nav" id="mobileNav">
             <div class="container py-3">
                 <!-- Navigation Items -->
-                <a class="mobile-nav-link" href="dashboard.php">Home</a>
-                <a class="mobile-nav-link" href="dashboard.php#about">About Us</a>
+                <a class="mobile-nav-link" href="index.php">Home</a>
+                <a class="mobile-nav-link" href="index.php#about">About Us</a>
                 <a class="mobile-nav-link active" href="menuUser.php">Menu</a>
-                <a class="mobile-nav-link" href="dashboard.php#news">News</a>
-                <a class="mobile-nav-link" href="dashboard.php#contact">Contact Us</a>
+                <a class="mobile-nav-link" href="index.php#news">News</a>
+                <a class="mobile-nav-link" href="index.php#contact">Contact Us</a>
 
                 <!-- Order Button -->
                 <a class="btn btn-order w-100 mt-3 d-flex align-items-center justify-content-center py-3"
@@ -561,15 +593,27 @@ if(isset($_SESSION['username'])){
 
                 <!-- Auth Buttons -->
                 <div class="mobile-auth-section">
-                    <a class="mobile-btn-login py-3" href="login.php">
-                        Masuk
+                    <?php if ($isLoggedIn): ?>
+                    <!-- User Info di Mobile -->
+                    <div class="text-center mb-3 p-3 rounded" style="background-color: rgba(25, 135, 84, 0.1);">
+                        <i class="bi bi-person-circle me-2 text-success"></i>
+                        <strong><?php echo htmlspecialchars($userName); ?></strong>
+                    </div>
+                    <a href="logout.php"
+                        class="mobile-btn-login py-3 text-center d-flex align-items-center justify-content-center">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        Logout
                     </a>
+                    <?php else: ?>
+                    <button class="mobile-btn-login py-3" onclick="handleLoginClick()">
+                        Masuk
+                    </button>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- EXISTING MENU CONTENT (unchanged) -->
     <div class="container-custom">
         <!-- Page Header -->
         <section id="menus">

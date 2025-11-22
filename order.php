@@ -1,9 +1,8 @@
 <?php
-// order.php
 session_start();
-require_once 'env.php';
+include 'env.php';
 
-// Get product if item_id is provided
+// ambil produk dari id
 $product = null;
 if (isset($_GET['item_id'])) {
     $item_id = $koneksi->real_escape_string($_GET['item_id']);

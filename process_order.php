@@ -1,5 +1,4 @@
 <?php
-// process_order.php
 session_start();
 require_once 'env.php';
 
@@ -23,17 +22,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['product_id'])) {
         exit();
     }
     
-    // Cek apakah produk exists
-    $product_query = "SELECT * FROM products WHERE id = '$product_id'";
-    $product_result = $koneksi->query($product_query);
+    // Cek apakah produk ada
+    $query = "SELECT * FROM products WHERE id = '$product_id'";
+    $result = $koneksi->query($query);
     
-    if ($product_result->num_rows == 0) {
+    if ($result->num_rows == 0) {
         $_SESSION['error'] = "Produk tidak ditemukan.";
         header("Location: menuUser.php");
         exit();
     }
     
-    $product = $product_result->fetch_assoc();
+    $product = $result->fetch_assoc();
     $total_price = $product['price'] * $quantity;
     
     // Insert order ke database TANPA STATUS
