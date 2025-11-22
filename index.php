@@ -34,6 +34,21 @@ if(isset($_GET['pesan'])){
     }
 }
 
+function getNewsItems($koneksi, $limit = 6) {
+    $stmt = $koneksi->prepare("SELECT * FROM news ORDER BY created_at DESC LIMIT ?");
+    $stmt->bind_param("i", $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $news = [];
+    while ($row = $result->fetch_assoc()) {
+        $news[] = $row;
+    }
+
+    $stmt->close();
+    return $news;
+}
+
 function getMenuItems($koneksi, $category) {
     $stmt = $koneksi->prepare("SELECT * FROM products WHERE category = ? ORDER BY name");
     $stmt->bind_param("s", $category);
@@ -52,6 +67,8 @@ function getMenuItems($koneksi, $category) {
 $coffeeItems = getMenuItems($koneksi, 'coffee');
 $nonCoffeeItems = getMenuItems($koneksi, 'minuman');
 $foodItems = getMenuItems($koneksi, 'makanan');
+
+$newsItems = getNewsItems($koneksi, 6);
 
 $isLoggedIn = isset($_SESSION['username']);
 $userName = '';
@@ -1493,73 +1510,64 @@ if ($isLoggedIn) {
 
                 <!-- News Grid -->
                 <div class="row g-4">
-                    <!-- News Item 1 -->
+                    <?php if (empty($newsItems)): ?>
+                    <!-- Jika tidak ada berita, tampilkan placeholder -->
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <i class="bi bi-newspaper display-1 text-muted mb-3"></i>
+                            <h4 class="text-muted">Belum ada berita</h4>
+                            <p class="text-muted">Silakan kunjungi kembali nanti untuk update terbaru</p>
+                        </div>
+                    </div>
+                    <?php else: ?>
+                    <?php foreach ($newsItems as $news): 
+                // Format tanggal Indonesia
+                $created_at = new DateTime($news['created_at']);
+                $formatted_date = $created_at->format('j F Y');
+                
+                // Default image jika tidak ada gambar
+                $news_image = $news['gambar'] ?: 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2ZmZWUlMjBzaG9wJTIwaW50ZXJpb3J8ZW58MXx8fHwxNzYxNDgwMzI4fDA&ixlib=rb-4.1.0&q=80&w=1080';
+            ?>
                     <div class="col-md-6 col-lg-4">
                         <div class="card news-card">
                             <div class="news-image">
-                                <img src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2ZmZWUlMjBzaG9wJTIwaW50ZXJpb3J8ZW58MXx8fHwxNzYxNDgwMzI4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                                    alt="Grand Opening Cabang Baru">
+                                <img src="<?php echo htmlspecialchars($news_image); ?>"
+                                    alt="<?php echo htmlspecialchars($news['judul']); ?>"
+                                    style="height: 200px; object-fit: cover; width: 100%;">
                             </div>
                             <div class="news-content">
                                 <div class="news-date">
                                     <i class="bi bi-calendar"></i>
-                                    <span>15 Oktober 2025</span>
+                                    <span><?php echo $formatted_date; ?></span>
                                 </div>
-                                <h4 class="news-title">Grand Opening Cabang Baru</h4>
+                                <h4 class="news-title"><?php echo htmlspecialchars($news['judul']); ?></h4>
                                 <p class="news-description">
-                                    Daun Hijau Cafe membuka cabang baru di Depok, Yogyakarta dengan konsep yang lebih
-                                    luas dan
-                                    nyaman.
+                                    <?php 
+                            $description = htmlspecialchars($news['deskripsi']);
+                            // Potong deskripsi jika terlalu panjang
+                            if (strlen($description) > 120) {
+                                echo substr($description, 0, 120) . '...';
+                            } else {
+                                echo $description;
+                            }
+                            ?>
                                 </p>
-
                             </div>
                         </div>
                     </div>
-
-                    <!-- News Item 2 -->
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card news-card">
-                            <div class="news-image">
-                                <img src="https://images.unsplash.com/photo-1628394726060-37cc4da4cf03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYWZlJTIwZm9vZCUyMHBhc3RyeXxlbnwxfHx8fDE3NjE0ODE0Njd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                                    alt="Menu Spesial Musim Hujan">
-                            </div>
-                            <div class="news-content">
-                                <div class="news-date">
-                                    <i class="bi bi-calendar"></i>
-                                    <span>1 Oktober 2025</span>
-                                </div>
-                                <h4 class="news-title">Menu Spesial Musim Hujan</h4>
-                                <p class="news-description">
-                                    Coba menu spesial kami untuk musim hujan: Hot Ginger Coffee dan Pisang Goreng
-                                    Cokelat.
-                                </p>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- News Item 3 -->
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card news-card">
-                            <div class="news-image">
-                                <img src="https://images.unsplash.com/photo-1650100458608-824a54559caa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2ZmZWUlMjBiZWFucyUyMGVzcHJlc3NvfGVufDF8fHx8MTc2MTQ0MTU3Mnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                                    alt="Workshop Brewing Kopi">
-                            </div>
-                            <div class="news-content">
-                                <div class="news-date">
-                                    <i class="bi bi-calendar"></i>
-                                    <span>20 September 2025</span>
-                                </div>
-                                <h4 class="news-title">Workshop Brewing Kopi</h4>
-                                <p class="news-description">
-                                    Ikuti workshop brewing kopi bersama barista profesional kami setiap akhir pekan.
-                                </p>
-
-                            </div>
-                        </div>
-                    </div>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
 
+                <!-- Tombol untuk melihat lebih banyak (opsional) -->
+                <!-- <?php if (!empty($newsItems)): ?>
+                <div class="text-center mt-5">
+                    <a href="#" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-arrow-right me-2"></i>
+                        Lihat Semua Berita
+                    </a>
+                </div>
+                <?php endif; ?> -->
             </div>
         </section>
 

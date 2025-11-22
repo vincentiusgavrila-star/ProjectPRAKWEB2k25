@@ -24,6 +24,10 @@ $resultOrders = $koneksi->query($queryOrders);
 $queryMessagesCount = "SELECT COUNT(*) as total_messages FROM contact_messages";
 $resultMessagesCount = $koneksi->query($queryMessagesCount);
 $messagesCount = $resultMessagesCount->fetch_assoc();
+
+$queryNewsCount = "SELECT COUNT(*) as total_news FROM news";
+$resultNewsCount = $koneksi->query($queryNewsCount);
+$newsCount = $resultNewsCount->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -310,6 +314,26 @@ $messagesCount = $resultMessagesCount->fetch_assoc();
         white-space: nowrap;
     }
 
+    .btn-news {
+        background: linear-gradient(135deg, #0d6efd, #0a58ca);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-news:hover {
+        background: linear-gradient(135deg, #0a58ca, #084298);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+    }
+
     @media (max-width: 768px) {
         .admin-container {
             padding: 1rem 0.5rem;
@@ -341,7 +365,7 @@ $messagesCount = $resultMessagesCount->fetch_assoc();
         <div class="admin-header">
             <button class="btn btn-back" onclick="handleBack()">
                 <i class="bi bi-arrow-left me-2"></i>
-                Back to Home
+                Logout
             </button>
             <h1 class="page-title display-5 fw-bold">Admin Dashboard</h1>
             <p class="page-subtitle">Manage users, menu items, orders, and customer messages</p>
@@ -353,6 +377,13 @@ $messagesCount = $resultMessagesCount->fetch_assoc();
                     View All Customer Messages
                     <?php if ($messagesCount['total_messages'] > 0): ?>
                     <span class="badge bg-primary ms-2"><?php echo $messagesCount['total_messages']; ?> messages</span>
+                    <?php endif; ?>
+                </a>
+                <a href="addNews.php" class="btn btn-view-messages">
+                    <i class="bi bi-newspaper me-2"></i>
+                    Manage News
+                    <?php if ($newsCount['total_news'] > 0): ?>
+                    <span class="badge bg-primary text-light ms-2"><?php echo $newsCount['total_news']; ?> news</span>
                     <?php endif; ?>
                 </a>
             </div>
@@ -376,6 +407,12 @@ $messagesCount = $resultMessagesCount->fetch_assoc();
                 <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button"
                     role="tab">
                     Orders
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="news-tab" data-bs-toggle="tab" data-bs-target="#news" type="button"
+                    role="tab">
+                    <i class="bi bi-newspaper me-1"></i>News
                 </button>
             </li>
         </ul>
@@ -416,11 +453,10 @@ $messagesCount = $resultMessagesCount->fetch_assoc();
                                             echo "<td>".$row['email']."</td>";
                                             echo "<td>
                                                 <div class='text-end'>
-                                                    <button class='btn btn-action'>
-                                                        <i class='bi bi-pencil'></i>
-                                                    </button>
                                                     <button class='btn btn-action delete'>
+                                                        <a href='deleteUsers.php?username=". $row['username'] ."'>
                                                         <i class='bi bi-trash text-danger'></i>
+                                                        </a>
                                                     </button>
                                                 </div>
                                             </td>";
@@ -455,6 +491,7 @@ $messagesCount = $resultMessagesCount->fetch_assoc();
                             <table class="table table-custom table-hover">
                                 <thead>
                                     <tr>
+                                        <th>No</th>
                                         <th>ID</th>
                                         <th>Name</th>
                                         <th>Category</th>
@@ -471,6 +508,7 @@ $messagesCount = $resultMessagesCount->fetch_assoc();
                                             $id += 1;
                                             echo "<tr>";
                                             echo "<td>".$id."</td>";
+                                            echo "<td>".$row['id']."</td>";
                                             echo "<td>".$row['name']."</td>";
                                             echo "<td>".$row['category']."</td>";
                                             echo "<td>Rp " . number_format($row['price'], 0, ',', '.') . "</td>";
@@ -478,10 +516,14 @@ $messagesCount = $resultMessagesCount->fetch_assoc();
                                             echo "<td>
                                                 <div class='text-end'>
                                                     <button class='btn btn-action'>
+                                                        <a href='editMenus.php?id=".$row['id']."'
                                                         <i class='bi bi-pencil'></i>
+                                                        </a>
                                                     </button>
                                                     <button class='btn btn-action delete'>
+                                                        <a href='deleteMenus.php?id=".$row['id']."'
                                                         <i class='bi bi-trash text-danger'></i>
+                                                        </a>
                                                     </button>
                                                 </div>
                                             </td>";
@@ -530,7 +572,6 @@ $messagesCount = $resultMessagesCount->fetch_assoc();
                                             $orderCount += 1;
                                             $totalPrice = $row['quantity'] * $row['product_price'];
                                             $formattedDate = date('Y-m-d H:i', strtotime($row['order_date']));
-                                            
                                             echo "<tr>";
                                             echo "<td>ORD-" . str_pad($orderCount, 3, '0', STR_PAD_LEFT) . "</td>";
                                             echo "<td>".$row['username']."</td>";
@@ -541,12 +582,13 @@ $messagesCount = $resultMessagesCount->fetch_assoc();
                                             echo "<td>".$formattedDate."</td>";
                                             echo "<td>
                                                 <div class='text-end'>
-                                                    <button class='btn btn-action'>
-                                                        <i class='bi bi-pencil'></i>
-                                                    </button>
-                                                    <button class='btn btn-action delete'>
-                                                        <i class='bi bi-trash text-danger'></i>
-                                                    </button>
+                                                    <a href='editOrders.php?id=".$row['id']."' class='btn btn-action'>
+                                            <i class='bi bi-pencil'></i>
+                                        </a>
+                                        <a href='deleteOrders.php?id=".$row['id']."' class='btn btn-action delete'
+                                           onclick='return confirm(\"Apakah Anda yakin ingin menghapus order ini?\")'>
+                                            <i class='bi bi-trash text-danger'></i>
+                                        </a>
                                                 </div>
                                             </td>";
                                             echo "</tr>";
@@ -557,6 +599,101 @@ $messagesCount = $resultMessagesCount->fetch_assoc();
                                     ?>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Tab -->
+            <div class="tab-pane fade" id="news" role="tabpanel">
+                <div class="card dashboard-card">
+                    <div class="card-header-custom">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h3 class="card-title">News Management</h3>
+                                <p class="card-description">Manage news and announcements for your website</p>
+                            </div>
+                            <a href="admin_news.php" class="btn btn-add">
+                                <i class="bi bi-plus me-2"></i>
+                                Manage News
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-newspaper display-4 text-primary mb-3"></i>
+                                        <h5>News Articles</h5>
+                                        <p class="text-muted">Create and manage news content</p>
+                                        <a href="admin_news.php" class="btn btn-primary">
+                                            Go to News Manager
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-image display-4 text-success mb-3"></i>
+                                        <h5>Media Gallery</h5>
+                                        <p class="text-muted">Upload and manage news images</p>
+                                        <button class="btn btn-outline-success" onclick="handleMediaGallery()">
+                                            View Gallery
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick News Stats -->
+                        <div class="row mt-4">
+                            <div class="col-md-3">
+                                <div class="text-center p-3 border rounded">
+                                    <h4 class="text-primary mb-1"><?php echo $newsCount['total_news']; ?></h4>
+                                    <small class="text-muted">Total News</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 border rounded">
+                                    <h4 class="text-success mb-1">
+                                        <?php 
+                                        $queryRecentNews = "SELECT COUNT(*) as recent_news FROM news WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
+                                        $resultRecentNews = $koneksi->query($queryRecentNews);
+                                        $recentNews = $resultRecentNews->fetch_assoc();
+                                        echo $recentNews['recent_news'];
+                                        ?>
+                                    </h4>
+                                    <small class="text-muted">This Week</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 border rounded">
+                                    <h4 class="text-info mb-1">
+                                        <?php 
+                                        $queryWithImages = "SELECT COUNT(*) as with_images FROM news WHERE gambar IS NOT NULL AND gambar != ''";
+                                        $resultWithImages = $koneksi->query($queryWithImages);
+                                        $withImages = $resultWithImages->fetch_assoc();
+                                        echo $withImages['with_images'];
+                                        ?>
+                                    </h4>
+                                    <small class="text-muted">With Images</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 border rounded">
+                                    <h4 class="text-warning mb-1">
+                                        <?php 
+                                        $queryTodayNews = "SELECT COUNT(*) as today_news FROM news WHERE DATE(created_at) = CURDATE()";
+                                        $resultTodayNews = $koneksi->query($queryTodayNews);
+                                        $todayNews = $resultTodayNews->fetch_assoc();
+                                        echo $todayNews['today_news'];
+                                        ?>
+                                    </h4>
+                                    <small class="text-muted">Today</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -628,6 +765,11 @@ $messagesCount = $resultMessagesCount->fetch_assoc();
 
     function handleAddMenu() {
         window.location.href = 'formMenuAdmin.php';
+    }
+
+    function handleMediaGallery() {
+        alert('Media gallery feature coming soon!');
+
     }
     </script>
 </body>

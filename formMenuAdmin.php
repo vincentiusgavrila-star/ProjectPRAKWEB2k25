@@ -149,11 +149,38 @@
         opacity: 0.8;
         margin-top: 0.5rem;
     }
+
+    .btn-outline-primary {
+        border: 2px solid var(--primary-green);
+        color: var(--primary-green);
+        background: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--primary-green);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+    }
     </style>
 </head>
 
 <body>
     <div class="admin-container">
+        <!-- Navigation Back to Dashboard -->
+        <div class="mb-4">
+            <a href="dashboardAdmin.php" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-2"></i>
+                Kembali ke Dashboard Admin
+            </a>
+        </div>
         <div class="admin-card">
             <!-- Header -->
             <div class="admin-header">
