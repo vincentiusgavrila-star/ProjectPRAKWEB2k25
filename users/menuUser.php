@@ -49,7 +49,7 @@ if(isset($_SESSION['username'])){
                stripos($item['description'], $searchQuery) !== false;
     });
 }else{
-    header("location:login.php");
+    header("location:../login.php?id=401");
     exit();
 
 }
@@ -545,11 +545,11 @@ if ($isLoggedIn) {
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto align-items-center">
                     <!-- Navigation Items -->
-                    <a class="nav-link-custom nav-link mx-1" href="index.php">Home</a>
-                    <a class="nav-link-custom nav-link mx-1" href="index.php#about">About Us</a>
+                    <a class="nav-link-custom nav-link mx-1" href="../index.php">Home</a>
+                    <a class="nav-link-custom nav-link mx-1" href="../index.php#about">About Us</a>
                     <a class="nav-link-custom nav-link active mx-1" href="menuUser.php">Menu</a>
-                    <a class="nav-link-custom nav-link mx-1" href="index.php#news">News</a>
-                    <a class="nav-link-custom nav-link mx-1" href="index.php#contact">Contact Us</a>
+                    <a class="nav-link-custom nav-link mx-1" href="../index.php#news">News</a>
+                    <a class="nav-link-custom nav-link mx-1" href="../index.php#contact">Contact Us</a>
 
                     <!-- Auth Buttons -->
                     <div class="d-flex align-items-center ms-3">
@@ -560,7 +560,7 @@ if ($isLoggedIn) {
                             <i class="bi bi-person-circle me-2 text-success"></i>
                             <span class="text-dark fw-medium"><?php echo htmlspecialchars($userName); ?></span>
                         </div>
-                        <a href="logout.php" class="btn btn-login d-flex align-items-center">
+                        <a href="../logout.php" class="btn btn-login d-flex align-items-center">
                             <i class="bi bi-box-arrow-right me-1"></i>
                             Logout
                         </a>
@@ -599,7 +599,7 @@ if ($isLoggedIn) {
                         <i class="bi bi-person-circle me-2 text-success"></i>
                         <strong><?php echo htmlspecialchars($userName); ?></strong>
                     </div>
-                    <a href="logout.php"
+                    <a href="../logout.php"
                         class="mobile-btn-login py-3 text-center d-flex align-items-center justify-content-center">
                         <i class="bi bi-box-arrow-right me-2"></i>
                         Logout

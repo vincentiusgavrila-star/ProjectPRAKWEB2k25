@@ -7,7 +7,7 @@ $password = $_POST['password'];
 
 if($email === 'admin@gmail.com' && $password === 'adminGanteng123'){
     $_SESSION['username'] = 'admin';
-    header("location:dashboardAdmin.php");
+    header("location:./admin/dashboardAdmin.php");
     exit();
 }
 

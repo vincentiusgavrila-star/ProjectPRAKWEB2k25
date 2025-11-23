@@ -1261,7 +1261,7 @@ if ($isLoggedIn) {
 
                 <!-- Tombol -->
                 <div class="d-flex gap-4 justify-content-center flex-wrap">
-                    <a href="menuUser.php" class="btn btn-custom-green btn-lg">
+                    <a href="./users/menuUser.php" class="btn btn-custom-green btn-lg">
                         Lihat Menu
                     </a>
 
@@ -1637,7 +1637,7 @@ if ($isLoggedIn) {
                                     Anda login sebagai <strong><?php echo htmlspecialchars($userName); ?></strong>.
                                     Form akan terisi otomatis dengan data profil Anda.
                                 </div>
-                                <form id="contactForm" method="POST" action="prosesPesan.php">
+                                <form id="contactForm" method="POST" action="./users/prosesPesan.php">
                                     <div class="mb-4">
                                         <label for="name" class="form-label">Nama Lengkap</label>
                                         <input type="text" class="form-control" id="name" name="name"
@@ -1930,9 +1930,7 @@ if ($isLoggedIn) {
     updateActiveState();
 
     function handleOrderNow() {
-        // Redirect ke halaman order atau tampilkan modal order
-        // alert('Redirect ke halaman pemesanan...');
-        window.location.href = 'menuUser.php';
+        window.location.href = './users/menuUser.php';
     }
 
     // Contact form handling

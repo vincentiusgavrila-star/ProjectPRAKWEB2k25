@@ -3,7 +3,7 @@ session_start();
 include 'env.php';
 
 if(!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin'){
-    header("location:login.php");
+    header("location:../login.php");
     exit();
 }
 
@@ -368,7 +368,7 @@ $newsCount = $resultNewsCount->fetch_assoc();
                 Logout
             </button>
             <h1 class="page-title display-5 fw-bold">Admin Dashboard</h1>
-            <p class="page-subtitle">Manage users, menu items, orders, and customer messages</p>
+            <p class="page-subtitle">Manage users, menu items, orders, news, and customer messages</p>
 
             <!-- Quick Navigation to Messages -->
             <div class="mt-3">
@@ -379,9 +379,9 @@ $newsCount = $resultNewsCount->fetch_assoc();
                     <span class="badge bg-primary ms-2"><?php echo $messagesCount['total_messages']; ?> messages</span>
                     <?php endif; ?>
                 </a>
-                <a href="addNews.php" class="btn btn-view-messages">
+                <a href="manageNews.php" class="btn btn-view-messages">
                     <i class="bi bi-newspaper me-2"></i>
-                    Manage News
+                    View All News
                     <?php if ($newsCount['total_news'] > 0): ?>
                     <span class="badge bg-primary text-light ms-2"><?php echo $newsCount['total_news']; ?> news</span>
                     <?php endif; ?>
@@ -613,9 +613,9 @@ $newsCount = $resultNewsCount->fetch_assoc();
                                 <h3 class="card-title">News Management</h3>
                                 <p class="card-description">Manage news and announcements for your website</p>
                             </div>
-                            <a href="admin_news.php" class="btn btn-add">
+                            <a href="manageNews.php" class="btn btn-add">
                                 <i class="bi bi-plus me-2"></i>
-                                Manage News
+                                Add News
                             </a>
                         </div>
                     </div>
@@ -627,7 +627,7 @@ $newsCount = $resultNewsCount->fetch_assoc();
                                         <i class="bi bi-newspaper display-4 text-primary mb-3"></i>
                                         <h5>News Articles</h5>
                                         <p class="text-muted">Create and manage news content</p>
-                                        <a href="admin_news.php" class="btn btn-primary">
+                                        <a href="manageNews.php" class="btn btn-primary">
                                             Go to News Manager
                                         </a>
                                     </div>
@@ -760,7 +760,7 @@ $newsCount = $resultNewsCount->fetch_assoc();
 
     <script>
     function handleBack() {
-        window.location.href = 'index.php?pesan=reset';
+        window.location.href = '../index.php?pesan=reset';
     }
 
     function handleAddMenu() {
@@ -768,7 +768,7 @@ $newsCount = $resultNewsCount->fetch_assoc();
     }
 
     function handleMediaGallery() {
-        alert('Media gallery feature coming soon!');
+        window.location.href = './gallery.php';
 
     }
     </script>

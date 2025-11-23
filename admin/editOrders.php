@@ -3,41 +3,39 @@ session_start();
 include 'env.php';
 
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
-    header("location: login.php");
+    header("location: ../login.php");
     exit();
 }
 
-// Get menu data for editing
-$menu = null;
+// Get order data for editing
+$order = null;
 if (isset($_GET['id'])) {
     $id = $koneksi->real_escape_string($_GET['id']);
-    $result = $koneksi->query("SELECT * FROM products WHERE id = '$id'");
+    $result = $koneksi->query("SELECT o.*, u.username, p.name as product_name FROM orders o JOIN users u ON o.user_id = u.id_user JOIN products p ON o.product_id = p.id WHERE o.id = '$id'");
     if ($result && $result->num_rows > 0) {
-        $menu = $result->fetch_assoc();
+        $order = $result->fetch_assoc();
     }
 }
 
-if (!$menu) {
-    $_SESSION['error'] = "Menu item tidak ditemukan";
+if (!$order) {
+    $_SESSION['error'] = "Order tidak ditemukan";
     header("Location: dashboardAdmin.php");
     exit();
 }
 
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_menu'])) {
-    $name = $koneksi->real_escape_string($_POST['name']);
-    $category = $koneksi->real_escape_string($_POST['category']);
-    $price = $koneksi->real_escape_string($_POST['price']);
-    $description = $koneksi->real_escape_string($_POST['description']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_order'])) {
+    $quantity = $koneksi->real_escape_string($_POST['quantity']);
+    $notes = $koneksi->real_escape_string($_POST['notes']);
     $id = $koneksi->real_escape_string($_POST['id']);
 
-    $stmt = $koneksi->prepare("UPDATE products SET name = ?, category = ?, price = ?, description = ? WHERE id = ?");
-    $stmt->bind_param("ssdsi", $name, $category, $price, $description, $id);
+    $stmt = $koneksi->prepare("UPDATE orders SET quantity = ?, notes = ?, WHERE id = ?");
+    $stmt->bind_param("isi", $quantity, $notes, $id);
     
     if ($stmt->execute()) {
-        $_SESSION['success'] = "Menu berhasil diperbarui!";
+        $_SESSION['success'] = "Order berhasil diperbarui!";
     } else {
-        $_SESSION['error'] = "Gagal memperbarui menu: " . $stmt->error;
+        $_SESSION['error'] = "Gagal memperbarui order: " . $stmt->error;
     }
     $stmt->close();
     
@@ -56,7 +54,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Menu - Admin Panel</title>
+    <title>Edit Order - Admin Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
@@ -91,6 +89,13 @@ unset($_SESSION['success'], $_SESSION['error']);
         padding: 1.5rem;
         border: none;
     }
+
+    .order-info {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
     </style>
 </head>
 
@@ -102,7 +107,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                 <i class="bi bi-arrow-left me-2"></i>
                 Kembali ke Dashboard
             </a>
-            <h1 class="h3 mb-0">Edit Menu</h1>
+            <h1 class="h3 mb-0">Edit Order</h1>
         </div>
 
         <!-- Success/Error Messages -->
@@ -125,46 +130,43 @@ unset($_SESSION['success'], $_SESSION['error']);
         <!-- Edit Form -->
         <div class="form-card">
             <div class="card-header card-header-custom">
-                <h4 class="mb-0"><i class="bi bi-pencil me-2"></i>Edit Menu Item</h4>
+                <h4 class="mb-0"><i class="bi bi-pencil me-2"></i>Edit Order</h4>
             </div>
             <div class="card-body p-4">
+                <!-- Order Information -->
+                <div class="order-info">
+                    <h6>Informasi Order</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">Customer:</small>
+                            <p class="mb-1"><?php echo htmlspecialchars($order['username']); ?></p>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Produk:</small>
+                            <p class="mb-1"><?php echo htmlspecialchars($order['product_name']); ?></p>
+                        </div>
+                    </div>
+                </div>
+
                 <form method="POST">
-                    <input type="hidden" name="id" value="<?php echo $menu['id']; ?>">
+                    <input type="hidden" name="id" value="<?php echo $order['id']; ?>">
 
                     <div class="mb-3">
-                        <label for="name" class="form-label">Nama Menu *</label>
-                        <input type="text" class="form-control" id="name" name="name" required
-                            value="<?php echo htmlspecialchars($menu['name']); ?>">
+                        <label for="quantity" class="form-label">Quantity *</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" required min="1"
+                            value="<?php echo htmlspecialchars($order['quantity']); ?>">
                     </div>
 
                     <div class="mb-3">
-                        <label for="category" class="form-label">Kategori *</label>
-                        <select class="form-control" id="category" name="category" required>
-                            <option value="coffee" <?php echo $menu['category'] == 'coffee' ? 'selected' : ''; ?>>Coffee
-                            </option>
-                            <option value="minuman" <?php echo $menu['category'] == 'minuman' ? 'selected' : ''; ?>>
-                                Minuman</option>
-                            <option value="makanan" <?php echo $menu['category'] == 'makanan' ? 'selected' : ''; ?>>
-                                Makanan</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="price" class="form-label">Harga *</label>
-                        <input type="number" class="form-control" id="price" name="price" required
-                            value="<?php echo htmlspecialchars($menu['price']); ?>">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Deskripsi *</label>
-                        <textarea class="form-control" id="description" name="description" rows="4"
-                            required><?php echo htmlspecialchars($menu['description']); ?></textarea>
+                        <label for="notes" class="form-label">Catatan</label>
+                        <textarea class="form-control" id="notes" name="notes"
+                            rows="3"><?php echo htmlspecialchars($order['notes']); ?></textarea>
                     </div>
 
                     <div class="d-flex gap-2">
-                        <button type="submit" name="update_menu" class="btn btn-success">
+                        <button type="submit" name="update_order" class="btn btn-success">
                             <i class="bi bi-check-lg me-2"></i>
-                            Update Menu
+                            Update Order
                         </button>
                         <a href="dashboardAdmin.php" class="btn btn-outline-secondary">
                             <i class="bi bi-x me-2"></i>

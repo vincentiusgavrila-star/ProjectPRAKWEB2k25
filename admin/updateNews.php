@@ -4,7 +4,7 @@ include 'env.php';
 
 // Check if user is admin
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
-    header("location: login.php");
+    header("location: ../login.php");
     exit();
 }
 
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_news'])) {
                 unlink($news['gambar']);
             }
             
-            $upload_dir = 'uploads/news/';
+            $upload_dir = '../uploads/news/';
             if (!is_dir($upload_dir)) {
                 mkdir($upload_dir, 0777, true);
             }

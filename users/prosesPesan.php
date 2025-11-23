@@ -5,7 +5,7 @@ include 'env.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_SESSION['username']) || empty($_SESSION['username'])) {
         $_SESSION['error'] = "Anda harus login terlebih dahulu";
-        header("Location: index.php#contact");
+        header("Location:../index.php#contact");
         exit();
     }
     $name = $koneksi->real_escape_string($_POST['name']);
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Jika ada error, redirect kembali
     if (!empty($errors)) {
         $_SESSION['contact_errors'] = $errors;
-        header("Location: index.php#contact");
+        header("Location:../index.php#contact");
         exit();
     }
 
@@ -45,18 +45,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if ($stmt->execute()) {
             $_SESSION['success'] = "Pesan berhasil dikirim!";
-            header("Location: index.php#contact");
+            header("Location:../index.php#contact");
             exit();
         } else {
             $_SESSION['error'] = "Terjadi kesalahan sistem: " . $stmt->error;
-            header("Location: index.php#contact");
+            header("Location:../index.php#contact");
             exit();
         }
         
         $stmt->close();
     } else {
         $_SESSION['error'] = "Terjadi kesalahan sistem";
-        header("Location: index.php#contact");
+        header("Location:../index.php#contact");
         exit();
     }
 } else {

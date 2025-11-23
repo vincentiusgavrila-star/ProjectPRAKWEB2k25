@@ -3,7 +3,7 @@ session_start();
 include 'env.php';
 
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
-    header("location: login.php");
+    header("location: ../login.php");
     exit();
 }
 
@@ -20,7 +20,7 @@ if (isset($_GET['delete_id'])) {
     $delete_query = "DELETE FROM contact_messages WHERE id = '$delete_id'";
     if ($koneksi->query($delete_query)) {
         $success = "Pesan berhasil dihapus!";
-        header("Location: pesanUser.php?success=" . urlencode($success));
+        header("Location: logUser.php?success=" . urlencode($success));
         exit();
     } else {
         $error = "Gagal menghapus pesan.";
