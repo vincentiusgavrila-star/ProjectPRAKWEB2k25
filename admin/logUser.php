@@ -402,8 +402,7 @@ if (isset($_GET['delete_id'])) {
                             </small>
                         </div>
                         <div class="action-buttons">
-                            <a href="pesanUser.php?delete_id=<?php echo $message['id']; ?>"
-                                class="btn btn-action delete"
+                            <a href="logUser.php?delete_id=<?php echo $message['id']; ?>" class="btn btn-action delete"
                                 onclick="return confirm('Apakah Anda yakin ingin menghapus pesan ini?')"
                                 title="Hapus Pesan">
                                 <i class="bi bi-trash"></i>

@@ -1843,10 +1843,10 @@ function getImagePath($gambar_path) {
             </div>
         </footer>
 
-        <!-- Back to Top Button -->
+        <!-- Back to Top Button
         <a href="#home" class="back-to-top smooth-scroll">
             <i class="bi bi-arrow-up"></i>
-        </a>
+        </a> -->
     </main>
 
     <!-- Bootstrap JS -->
@@ -1993,19 +1993,19 @@ function getImagePath($gambar_path) {
             });
         });
 
-        // Show/hide back to top button based on scroll position
-        const backToTopButton = document.querySelector('.back-to-top');
+        // // Show/hide back to top button based on scroll position
+        // const backToTopButton = document.querySelector('.back-to-top');
 
-        window.addEventListener('scroll', function() {
-            if (window.pageYOffset > 300) {
-                backToTopButton.style.display = 'flex';
-            } else {
-                backToTopButton.style.display = 'none';
-            }
-        });
+        // window.addEventListener('scroll', function() {
+        //     if (window.pageYOffset > 300) {
+        //         backToTopButton.style.display = 'flex';
+        //     } else {
+        //         backToTopButton.style.display = 'none';
+        //     }
+        // });
 
-        // Initialize back to top button visibility
-        backToTopButton.style.display = 'none';
+        // // Initialize back to top button visibility
+        // backToTopButton.style.display = 'none';
 
         // Add loading animation to social links
         const socialLinks = document.querySelectorAll('.social-link');

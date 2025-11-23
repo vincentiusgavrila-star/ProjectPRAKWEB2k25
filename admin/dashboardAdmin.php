@@ -613,7 +613,7 @@ $newsCount = $resultNewsCount->fetch_assoc();
                                 <h3 class="card-title">News Management</h3>
                                 <p class="card-description">Manage news and announcements for your website</p>
                             </div>
-                            <a href="manageNews.php" class="btn btn-add">
+                            <a href="addNews.php" class="btn btn-add">
                                 <i class="bi bi-plus me-2"></i>
                                 Add News
                             </a>
