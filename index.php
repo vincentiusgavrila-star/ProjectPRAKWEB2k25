@@ -1875,21 +1875,6 @@ function getImagePath($gambar_path) {
         }
     }
 
-    function handleOrderClick() {
-        // Simulasi navigasi ke halaman order
-        currentPage = "order";
-        alert('Navigating to Order Page');
-
-        // Update active state
-        updateActiveState();
-
-        // Tutup mobile menu jika terbuka
-        const mobileNav = document.getElementById('mobileNav');
-        if (mobileNav.classList.contains('show')) {
-            const bsCollapse = new bootstrap.Collapse(mobileNav);
-            bsCollapse.hide();
-        }
-    }
 
     function handleLoginClick() {
         // Navigasi ke halaman login
@@ -1926,9 +1911,6 @@ function getImagePath($gambar_path) {
 
         // Add active class based on current page
         switch (currentPage) {
-            case 'order':
-                if (orderButton) orderButton.classList.add('active');
-                break;
             case 'login':
                 if (loginButton) loginButton.classList.add('active');
                 break;
@@ -1965,16 +1947,16 @@ function getImagePath($gambar_path) {
     });
     // Optional: Add active state to menu cards on click
     document.addEventListener('DOMContentLoaded', function() {
-        const menuCards = document.querySelectorAll('.menu-card');
+        // const menuCards = document.querySelectorAll('.menu-card');
 
-        menuCards.forEach(card => {
-            card.addEventListener('click', function() {
-                // Remove active class from all cards
-                menuCards.forEach(c => c.classList.remove('active'));
-                // Add active class to clicked card
-                this.classList.add('active');
-            });
-        });
+        // menuCards.forEach(card => {
+        //     card.addEventListener('click', function() {
+        //         // Remove active class from all cards
+        //         menuCards.forEach(c => c.classList.remove('active'));
+        //         // Add active class to clicked card
+        //         this.classList.add('active');
+        //     });
+        // });
         const smoothScrollLinks = document.querySelectorAll('.smooth-scroll');
 
         smoothScrollLinks.forEach(link => {
@@ -2023,7 +2005,7 @@ function getImagePath($gambar_path) {
                 // Simulate social media redirect (replace with actual links)
                 const platform = this.getAttribute('aria-label').toLowerCase();
                 alert(`Redirecting to ${platform}...`);
-                // window.location.href = this.href; // Uncomment for actual links
+                window.location.href = 'https://www.instagram.com/vincentius_gs/?next=%2F';
             });
         });
     });
