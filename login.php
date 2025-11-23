@@ -187,10 +187,6 @@
                         placeholder="Masukkan password" required>
                 </div>
 
-                <div class="mb-4 text-end">
-                    <a href="#" class="forgot-password">Lupa password?</a>
-                </div>
-
                 <button type="submit" class="btn btn-login w-100">Masuk</button>
 
                 <div class="signup-text">

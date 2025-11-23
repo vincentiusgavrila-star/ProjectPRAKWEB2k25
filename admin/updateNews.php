@@ -88,7 +88,7 @@ unset($_SESSION['success'], $_SESSION['error']);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-    /* Same styles as admin_news.php */
+
     :root {
         --primary-green: #198754;
         --dark-green: #155724;
@@ -136,7 +136,7 @@ unset($_SESSION['success'], $_SESSION['error']);
     <div class="admin-container">
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <a href="admin_news.php" class="btn btn-outline-secondary">
+            <a href="manageNews.php" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-2"></i>
                 Kembali
             </a>
@@ -201,7 +201,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <i class="bi bi-check-lg me-2"></i>
                             Update Berita
                         </button>
-                        <a href="admin_news.php" class="btn btn-outline-secondary">
+                        <a href="manageNews.php" class="btn btn-outline-secondary">
                             <i class="bi bi-x me-2"></i>
                             Batal
                         </a>

@@ -4,7 +4,7 @@ include 'env.php';
 
 // Cek apakah user sudah login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -46,7 +46,7 @@ $result = $koneksi->query($query);
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="index.php">
+            <a class="navbar-brand fw-bold" href="../index.php">
                 <i class="fas fa-leaf me-2"></i>Daun Hijau Cafe
             </a>
             <div class="navbar-nav ms-auto">

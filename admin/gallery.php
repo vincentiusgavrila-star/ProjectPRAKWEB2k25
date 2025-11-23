@@ -307,7 +307,7 @@ if ($result) {
                 <i class="bi bi-image"></i>
                 <h4>Belum ada gambar berita</h4>
                 <p>Belum ada berita yang memiliki gambar</p>
-                <a href="admin_news.php" class="btn btn-back mt-3">
+                <a href="manageNews.php" class="btn btn-back mt-3">
                     <i class="bi bi-arrow-left me-2"></i>
                     Kembali ke Kelola Berita
                 </a>

@@ -402,11 +402,6 @@ if (isset($_GET['delete_id'])) {
                             </small>
                         </div>
                         <div class="action-buttons">
-                            <a href="mailto:<?php echo htmlspecialchars($message['email']); ?>" class="btn btn-action"
-                                title="Balas via Email">
-                                <i class="bi bi-reply"></i>
-                            </a>
-
                             <a href="pesanUser.php?delete_id=<?php echo $message['id']; ?>"
                                 class="btn btn-action delete"
                                 onclick="return confirm('Apakah Anda yakin ingin menghapus pesan ini?')"
