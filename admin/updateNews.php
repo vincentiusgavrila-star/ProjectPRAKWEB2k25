@@ -72,6 +72,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_news'])) {
     exit();
 }
 
+function getImagePath($gambar_path) {
+    if (empty($gambar_path)) return '';
+    
+    // Cek berbagai kemungkinan path
+    $possible_paths = [
+        $gambar_path,
+        '../uploads/news/' . basename($gambar_path)
+    ];
+    
+    foreach ($possible_paths as $path) {
+        if (file_exists($path)) {
+            return $path;
+        }
+    }
+    
+    return $gambar_path; // Return original path as fallback
+}
 // Handle success/error messages
 $success = $_SESSION['success'] ?? '';
 $error = $_SESSION['error'] ?? '';
@@ -88,7 +105,6 @@ unset($_SESSION['success'], $_SESSION['error']);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-
     :root {
         --primary-green: #198754;
         --dark-green: #155724;
@@ -190,8 +206,8 @@ unset($_SESSION['success'], $_SESSION['error']);
                         <?php if ($news['gambar']): ?>
                         <div class="mt-2">
                             <p class="mb-1">Gambar saat ini:</p>
-                            <img src="<?php echo htmlspecialchars($news['gambar']); ?>" class="image-preview"
-                                alt="Current image">
+                            <img src="<?php echo htmlspecialchars(getImagePath($news['gambar'])); ?>"
+                                class="image-preview" alt="Current image">
                         </div>
                         <?php endif; ?>
                     </div>

@@ -89,6 +89,24 @@ if ($isLoggedIn) {
         $stmt->close();
     }
 }
+
+function getImagePath($gambar_path) {
+    if (empty($gambar_path)) return '';
+    
+    // Cek berbagai kemungkinan path
+    $possible_paths = [
+        $gambar_path,
+        './uploads/news/' . basename($gambar_path)
+    ];
+    
+    foreach ($possible_paths as $path) {
+        if (file_exists($path)) {
+            return $path;
+        }
+    }
+    
+    return $gambar_path; // Return original path as fallback
+}
 ?>
 
 
@@ -1521,17 +1539,16 @@ if ($isLoggedIn) {
                     </div>
                     <?php else: ?>
                     <?php foreach ($newsItems as $news): 
-                // Format tanggal Indonesia
-                $created_at = new DateTime($news['created_at']);
-                $formatted_date = $created_at->format('j F Y');
-                
-                // Default image jika tidak ada gambar
-                $news_image = $news['gambar'] ?: 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2ZmZWUlMjBzaG9wJTIwaW50ZXJpb3J8ZW58MXx8fHwxNzYxNDgwMzI4fDA&ixlib=rb-4.1.0&q=80&w=1080';
+                    // Format tanggal Indonesia
+                    $created_at = new DateTime($news['created_at']);
+                    $formatted_date = $created_at->format('j F Y');
+                    // Default image jika tidak ada gambar
+                    $news_image = $news['gambar'] ?: 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2ZmZWUlMjBzaG9wJTIwaW50ZXJpb3J8ZW58MXx8fHwxNzYxNDgwMzI4fDA&ixlib=rb-4.1.0&q=80&w=1080';
             ?>
                     <div class="col-md-6 col-lg-4">
                         <div class="card news-card">
                             <div class="news-image">
-                                <img src="<?php echo htmlspecialchars($news_image); ?>"
+                                <img src="<?php echo htmlspecialchars(getImagePath($news_image)); ?>"
                                     alt="<?php echo htmlspecialchars($news['judul']); ?>"
                                     style="height: 200px; object-fit: cover; width: 100%;">
                             </div>
