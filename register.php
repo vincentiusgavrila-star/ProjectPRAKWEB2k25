@@ -1,3 +1,77 @@
+<?php
+session_start();
+include 'env.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nama = $koneksi->real_escape_string(trim($_POST['nama']));
+    $email = $koneksi->real_escape_string(trim($_POST['email']));
+    $password = $_POST['password'];
+    $terms = isset($_POST['terms']) ? true : false;
+    
+    $errors = [];
+    
+    // Validasi nama
+    if (empty($nama)) {
+        $errors[] = "Nama lengkap harus diisi";
+    } elseif (strlen($nama) < 2) {
+        $errors[] = "Nama lengkap minimal 2 karakter";
+    }
+    
+    // Validasi email
+    if (empty($email)) {
+        $errors[] = "Email harus diisi";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Format email tidak valid";
+    } else {
+        // Cek apakah email sudah terdaftar
+        $check_email = $koneksi->query("SELECT id_user FROM users WHERE email = '$email'");
+        if ($check_email && $check_email->num_rows > 0) {
+            $errors[] = "Email sudah terdaftar";
+        }
+    }
+    
+    // Validasi password
+    if (empty($password)) {
+        $errors[] = "Password harus diisi";
+    } elseif (strlen($password) < 6) {
+        $errors[] = "Password minimal 6 karakter";
+    }
+    
+    // Validasi terms
+    if (!$terms) {
+        $errors[] = "Anda harus menyetujui syarat dan ketentuan";
+    }
+    
+    // Jika ada error, redirect kembali dengan pesan error
+    if (!empty($errors)) {
+        $_SESSION['errors'] = $errors;
+        $_SESSION['old_data'] = ['nama' => $nama, 'email' => $email];
+        header("Location: register.php");
+        exit();
+    }
+    
+    // Hash password
+    // $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    
+    // Insert ke database
+    $sql = "INSERT INTO users (username, email, password) 
+            VALUES ('$nama', '$email', '$password')";
+    
+    if ($koneksi->query($sql) === TRUE) {
+        $_SESSION['success'] = "Registrasi berhasil! Silakan login.";
+        header("Location: login.php");
+        exit();
+    } else {
+        $errors[] = "Terjadi kesalahan sistem: " . $koneksi->error;
+        $_SESSION['errors'] = $errors;
+        $_SESSION['old_data'] = ['nama' => $nama, 'email' => $email];
+        header("Location: register.php");
+        exit();
+    }
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -187,7 +261,7 @@
             <div id="alertMessage" class="alert" role="alert"></div>
 
             <!-- Form Register -->
-            <form action="./registerSuccess.php" method="POST" id="registerForm">
+            <form action="" method="POST" id="registerForm">
                 <!-- Nama Lengkap -->
                 <div class="mb-3">
                     <label for="fullname" class="form-label">Nama Lengkap</label>
